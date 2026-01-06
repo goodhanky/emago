@@ -306,17 +306,19 @@ public/sprites/
 │   ├── deuterium.png
 │   └── energy.png
 ├── buildings/
-│   ├── metal-mine.png
-│   ├── crystal-mine.png
-│   ├── deuterium-synthesizer.png
-│   ├── solar-plant.png
-│   ├── metal-storage.png
-│   ├── crystal-storage.png
-│   ├── deuterium-tank.png
-│   ├── research-lab.png
-│   ├── shipyard.png
-│   ├── robot-factory.png
-│   └── nanite-factory.png
+│   ├── resources/          # Mines and storage
+│   │   ├── metal-mine.png
+│   │   ├── crystal-mine.png
+│   │   ├── deuterium-synthesizer.png
+│   │   ├── solar-plant.png
+│   │   ├── metal-storage.png
+│   │   ├── crystal-storage.png
+│   │   └── deuterium-tank.png
+│   └── facilities/         # Other buildings
+│       ├── research-lab.png
+│       ├── shipyard.png
+│       ├── robot-factory.png
+│       └── nanite-factory.png
 ├── ships/
 │   ├── small-cargo.png
 │   ├── large-cargo.png
