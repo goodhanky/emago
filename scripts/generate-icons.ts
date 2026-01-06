@@ -5,6 +5,7 @@
  *   GEMINI_API_KEY=your_key npm run generate:icons
  *   GEMINI_API_KEY=your_key npm run generate:icons -- --category=resources
  *   GEMINI_API_KEY=your_key npm run generate:icons -- --dry-run
+ *   GEMINI_API_KEY=your_key npm run generate:icons -- --model=gemini-2.0-flash-exp
  *
  * Environment variables:
  *   GEMINI_API_KEY - Your Google Gemini API key (required)
@@ -13,6 +14,10 @@
  *   --category=<name>  Generate only a specific category (resources, buildings, ships, ui, icons)
  *   --dry-run          Parse prompts and show what would be generated without calling the API
  *   --skip-existing    Skip icons that already exist in the output directory
+ *   --model=<name>     Gemini model to use (default: gemini-2.0-flash-exp)
+ *
+ * Note: Free tier has limited daily quota. If you hit rate limits, the script will
+ * automatically retry with exponential backoff. For heavy usage, enable billing.
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -206,14 +211,19 @@ function parsePromptsFile(filePath: string): IconPrompt[] {
   return prompts;
 }
 
+// Default model - can be overridden with --model flag
+const DEFAULT_MODEL = "gemini-2.0-flash-exp";
+const MAX_RETRIES = 3;
+
 async function generateImage(
   genAI: GoogleGenerativeAI,
-  prompt: IconPrompt
+  prompt: IconPrompt,
+  modelName: string,
+  retryCount = 0
 ): Promise<Buffer | null> {
   try {
-    // Use Gemini 2.0 Flash for image generation
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp",
+      model: modelName,
       generationConfig: {
         // @ts-expect-error - responseModalities is valid for image generation
         responseModalities: ["image", "text"],
@@ -237,8 +247,35 @@ async function generateImage(
 
     console.error(`  No image data in response for ${prompt.name}`);
     return null;
-  } catch (error) {
-    console.error(`  Error generating ${prompt.name}:`, error);
+  } catch (error: unknown) {
+    const geminiError = error as { status?: number; errorDetails?: Array<{ retryDelay?: string }> };
+
+    // Handle rate limiting with automatic retry
+    if (geminiError.status === 429 && retryCount < MAX_RETRIES) {
+      // Extract retry delay from error response
+      let retryDelay = 60; // default 60 seconds
+      if (geminiError.errorDetails) {
+        for (const detail of geminiError.errorDetails) {
+          if (detail.retryDelay) {
+            const match = detail.retryDelay.match(/(\d+)/);
+            if (match) {
+              retryDelay = parseInt(match[1], 10) + 5; // Add 5s buffer
+            }
+          }
+        }
+      }
+
+      console.log(`  ⏳ Rate limited. Waiting ${retryDelay}s before retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      await sleep(retryDelay * 1000);
+      return generateImage(genAI, prompt, modelName, retryCount + 1);
+    }
+
+    // Check if it's a quota exhausted error (daily limit)
+    if (geminiError.status === 429) {
+      console.error(`  ❌ Daily quota exhausted. Try again tomorrow or enable billing.`);
+    } else {
+      console.error(`  Error generating ${prompt.name}:`, error);
+    }
     return null;
   }
 }
@@ -251,6 +288,10 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const skipExisting = args.includes("--skip-existing");
+
+  // Parse model flag
+  const modelArg = args.find((a) => a.startsWith("--model="));
+  const modelName = modelArg ? modelArg.split("=")[1] : DEFAULT_MODEL;
 
   // Parse category filter
   let categoryFilter: string[] | null = null;
@@ -331,7 +372,7 @@ async function main() {
     return;
   }
 
-  console.log(`\nGenerating ${prompts.length} icons...\n`);
+  console.log(`\nGenerating ${prompts.length} icons using model: ${modelName}...\n`);
 
   // Initialize Gemini
   const genAI = new GoogleGenerativeAI(apiKey!);
@@ -356,7 +397,7 @@ async function main() {
 
     console.log(`${progress} Generating ${prompt.name}...`);
 
-    const imageBuffer = await generateImage(genAI, prompt);
+    const imageBuffer = await generateImage(genAI, prompt, modelName);
 
     if (imageBuffer) {
       const outputPath = path.join(process.cwd(), prompt.outputPath);
