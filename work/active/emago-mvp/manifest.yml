@@ -1,0 +1,22 @@
+# Emago MVP - Work Item Manifest
+# Machine-friendly metadata for tracking work progress
+# Last Updated: 2026-01-05
+
+id: emago-mvp
+title: 'Emago Space Strategy Game - MVP Implementation'
+status: implementing
+tags:
+  - game
+  - next.js
+  - typescript
+  - supabase
+  - pixel-art
+  - strategy
+  - mvp
+  - prisma
+created: 2026-01-05
+updated: 2026-01-06
+related_issues: []
+owners: []
+
+# Purpose: Track the complete MVP implementation of Emago, a web-based space strategy game

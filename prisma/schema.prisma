@@ -1,0 +1,265 @@
+// Emago - Space Strategy Game Database Schema
+// Based on PRD v2.0 Data Model
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/lib/db/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum BuildingType {
+  METAL_MINE
+  CRYSTAL_MINE
+  DEUTERIUM_SYNTHESIZER
+  SOLAR_PLANT
+  METAL_STORAGE
+  CRYSTAL_STORAGE
+  DEUTERIUM_TANK
+  RESEARCH_LAB
+  SHIPYARD
+  ROBOT_FACTORY
+  NANITE_FACTORY
+}
+
+enum TechType {
+  ENERGY
+  COMPUTER
+  WEAPONS
+  SHIELDING
+  ARMOR
+  COMBUSTION_DRIVE
+  IMPULSE_DRIVE
+  HYPERSPACE_DRIVE
+  ESPIONAGE
+}
+
+enum ShipType {
+  SMALL_CARGO
+  LARGE_CARGO
+  LIGHT_FIGHTER
+  HEAVY_FIGHTER
+  CRUISER
+}
+
+enum QueueStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// CORE ENTITIES
+// ============================================
+
+model Player {
+  id                String   @id @default(cuid())
+  userId            String   @unique @map("user_id") // Links to Supabase auth.users
+  username          String   @unique
+  darkMatterBalance Int      @default(0) @map("dark_matter_balance")
+  lastLoginAt       DateTime @default(now()) @map("last_login_at")
+  loginStreak       Int      @default(0) @map("login_streak")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  planet            Planet?
+  researches        Research[]
+  researchQueue     ResearchQueue?
+  darkMatterLedger  DarkMatterLedger[]
+  actionLogs        ActionLog[]
+
+  @@map("players")
+}
+
+model Planet {
+  id                 String   @id @default(cuid())
+  playerId           String   @unique @map("player_id")
+  name               String   @default("Homeworld")
+  coordX             Int      @map("coord_x")
+  coordY             Int      @map("coord_y")
+  temperature        Int      @default(25)
+  fields             Int      @default(163)
+  fieldsUsed         Int      @default(0) @map("fields_used")
+
+  // Resources (lazy calculation - these are snapshots)
+  metal              Float    @default(500)
+  crystal            Float    @default(500)
+  deuterium          Float    @default(0)
+  lastResourceUpdate DateTime @default(now()) @map("last_resource_update")
+
+  // Cached production rates (updated when buildings change)
+  metalPerHour       Float    @default(0) @map("metal_per_hour")
+  crystalPerHour     Float    @default(0) @map("crystal_per_hour")
+  deuteriumPerHour   Float    @default(0) @map("deuterium_per_hour")
+  energyProduction   Int      @default(0) @map("energy_production")
+  energyConsumption  Int      @default(0) @map("energy_consumption")
+
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  player             Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  buildings          Building[]
+  buildingQueue      BuildingQueue?
+  ships              PlanetShip[]
+  shipQueues         ShipQueue[]
+
+  @@map("planets")
+}
+
+model Building {
+  id        String       @id @default(cuid())
+  planetId  String       @map("planet_id")
+  type      BuildingType
+  level     Int          @default(0)
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  planet    Planet       @relation(fields: [planetId], references: [id], onDelete: Cascade)
+
+  @@unique([planetId, type])
+  @@map("buildings")
+}
+
+model Research {
+  id        String   @id @default(cuid())
+  playerId  String   @map("player_id")
+  type      TechType
+  level     Int      @default(0)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, type])
+  @@map("researches")
+}
+
+model PlanetShip {
+  id       String   @id @default(cuid())
+  planetId String   @map("planet_id")
+  type     ShipType
+  count    Int      @default(0)
+
+  // Relations
+  planet   Planet   @relation(fields: [planetId], references: [id], onDelete: Cascade)
+
+  @@unique([planetId, type])
+  @@map("planet_ships")
+}
+
+// ============================================
+// QUEUE ENTITIES
+// ============================================
+
+model BuildingQueue {
+  id           String       @id @default(cuid())
+  planetId     String       @unique @map("planet_id") // Only one active per planet
+  buildingType BuildingType @map("building_type")
+  targetLevel  Int          @map("target_level")
+  metalCost    Float        @map("metal_cost")
+  crystalCost  Float        @map("crystal_cost")
+  deuteriumCost Float       @map("deuterium_cost")
+  startTime    DateTime     @map("start_time")
+  endTime      DateTime     @map("end_time")
+  status       QueueStatus  @default(IN_PROGRESS)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  planet       Planet       @relation(fields: [planetId], references: [id], onDelete: Cascade)
+
+  @@map("building_queues")
+}
+
+model ResearchQueue {
+  id          String      @id @default(cuid())
+  playerId    String      @unique @map("player_id") // Only one active per player
+  planetId    String      @map("planet_id") // Which planet's lab is being used
+  techType    TechType    @map("tech_type")
+  targetLevel Int         @map("target_level")
+  metalCost   Float       @map("metal_cost")
+  crystalCost Float       @map("crystal_cost")
+  deuteriumCost Float     @map("deuterium_cost")
+  startTime   DateTime    @map("start_time")
+  endTime     DateTime    @map("end_time")
+  status      QueueStatus @default(IN_PROGRESS)
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  player      Player      @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("research_queues")
+}
+
+model ShipQueue {
+  id                 String      @id @default(cuid())
+  planetId           String      @map("planet_id")
+  shipType           ShipType    @map("ship_type")
+  quantity           Int         // Total ships requested
+  completedCount     Int         @default(0) @map("completed_count")
+  metalCost          Float       @map("metal_cost") // Total cost for all ships
+  crystalCost        Float       @map("crystal_cost")
+  deuteriumCost      Float       @map("deuterium_cost")
+  startTime          DateTime    @map("start_time")
+  endTime            DateTime    @map("end_time") // When entire batch finishes
+  currentShipEndTime DateTime    @map("current_ship_end_time") // When current ship finishes
+  status             QueueStatus @default(IN_PROGRESS)
+  createdAt          DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  planet             Planet      @relation(fields: [planetId], references: [id], onDelete: Cascade)
+
+  @@map("ship_queues")
+}
+
+// ============================================
+// CONFIGURATION & AUDIT ENTITIES
+// ============================================
+
+model GameConfig {
+  key         String   @id
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("game_configs")
+}
+
+model DarkMatterLedger {
+  id           String   @id @default(cuid())
+  playerId     String   @map("player_id")
+  amount       Int      // Positive for gain, negative for spend
+  reason       String   // e.g., "DAILY_LOGIN", "WEEKLY_STREAK"
+  referenceId  String?  @map("reference_id") // Optional link to related entity
+  balanceAfter Int      @map("balance_after")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  player       Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([playerId, createdAt])
+  @@map("dark_matter_ledger")
+}
+
+model ActionLog {
+  id         String   @id @default(cuid())
+  playerId   String   @map("player_id")
+  actionType String   @map("action_type")
+  details    Json?
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  player     Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([playerId, createdAt])
+  @@index([actionType, createdAt])
+  @@map("action_logs")
+}
