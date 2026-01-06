@@ -1,6 +1,6 @@
 # Emago MVP - Task Breakdown
 
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-05
 **Purpose:** Actionable task checklist organized by phase with acceptance criteria
 
 ---
@@ -45,6 +45,24 @@
   - Acceptance: 5 ship type silhouettes in sprite atlas
   - Effort: M
   - Dependencies: Color palette, pixel scale
+
+- [x] **Create AI generation prompts**
+  - Acceptance: PIXEL_ART_PROMPTS.md with detailed prompts for all 47 assets
+  - Effort: M
+  - Dependencies: None
+  - Completed: 2026-01-05
+
+- [x] **Set up sprite folder structure**
+  - Acceptance: public/sprites/{resources,buildings,ships,ui,icons} created
+  - Effort: S
+  - Dependencies: None
+  - Completed: 2026-01-05
+
+- [ ] **Generate pixel art assets**
+  - Acceptance: All 47 assets generated and saved to public/sprites/
+  - Effort: L
+  - Dependencies: AI prompts created
+  - Note: Using AI generation with prompts from PIXEL_ART_PROMPTS.md
 
 - [ ] **Set up sprite atlas pipeline**
   - Acceptance: Aseprite → TexturePacker → JSON atlas working, documented

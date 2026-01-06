@@ -1,6 +1,6 @@
 # Emago MVP - Context Snapshot
 
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-05
 **Purpose:** Resume in 2 minutes briefing for continuing work
 
 ---
@@ -41,16 +41,18 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Prisma 7 with pg adapter set up
 - [x] Database schema created (11 tables)
 - [x] GameConfig seeded (75 values)
+- [x] Pixel art prompts created (47 assets documented)
+- [x] Sprite folder structure created
 
 ### In Progress
 
-- [ ] Art spike (deferred - project setup done first)
+- [ ] Art asset generation (using AI with prompts from PIXEL_ART_PROMPTS.md)
 
 ### Next Up
 
-1. Authentication (Supabase email/password)
-2. Game layout + navigation
-3. Formula engine implementation
+1. Generate pixel art assets (resource icons, UI components first)
+2. Authentication (Supabase email/password)
+3. Game layout + navigation
 
 ### Blockers
 
@@ -78,11 +80,12 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 | PRD         | `/PRD-v2.0.md`              | Source of truth for formulas, features |
 | DB Schema   | `prisma/schema.prisma`      | Core data model (created)              |
 | DB Client   | `src/lib/db/index.ts`       | Prisma client singleton                |
+| Art Prompts | `PIXEL_ART_PROMPTS.md`      | AI prompts for all 47 game assets      |
+| Sprites     | `public/sprites/`           | Generated pixel art assets             |
 | Formulas    | `src/lib/game/formulas/`    | Game economy calculations              |
 | Lazy calc   | `src/lib/game/resources.ts` | Central resource calculation           |
 | Validation  | `src/lib/game/validation/`  | Server-side checks                     |
 | Cron jobs   | `src/app/api/cron/`         | Queue processing                       |
-| Style guide | `STYLE_GUIDE.md`            | Art direction (to be created)          |
 
 ---
 
@@ -108,13 +111,12 @@ npm run format        # Run Prettier
 
 ## Open Questions
 
-1. **Pixel art creation:** Will you create the sprites yourself or use a specific tool/asset pack?
-2. **Domain/deployment:** Any specific domain or just Vercel preview URLs for now?
+1. **Domain/deployment:** Any specific domain or just Vercel preview URLs for now?
 
 ---
 
 ## Next 3 Actions
 
-1. **Enable Supabase Auth** - Configure email/password authentication
-2. **Create auth pages** - Login/register pages with Supabase
-3. **Create game layout** - Navigation sidebar, resource bar component
+1. **Generate pixel art** - Use AI with prompts from PIXEL_ART_PROMPTS.md (resource icons + UI first)
+2. **Enable Supabase Auth** - Configure email/password authentication
+3. **Create auth pages** - Login/register pages with Supabase

@@ -1,7 +1,38 @@
 # Emago MVP - Progress Log
 
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-05
 **Purpose:** Chronological record of progress and decisions
+
+---
+
+## 2026-01-05 - Pixel Art Prompts Created
+
+### What Changed
+
+- Created PIXEL_ART_PROMPTS.md with 47 detailed AI generation prompts
+- Organized prompts by category: resources (4), buildings (11), ships (5), UI components, nav icons, status icons
+- Created sprite folder structure: public/sprites/{resources,buildings,ships,ui,icons}
+- Resolved open question: user will generate pixel art using AI with these prompts
+
+### Key Decisions Made
+
+- AI-generated pixel art approach (using prompts instead of manual Aseprite work)
+- Prioritized asset generation order: resource icons + UI first, then buildings, ships last
+
+### What's Next
+
+1. Generate pixel art assets using AI with the prompts
+2. Enable Supabase email/password authentication
+3. Create login/register pages
+
+### Blockers
+
+- None
+
+### Notes
+
+- 47 total assets documented with specific dimensions and style guidance
+- File naming convention established in PIXEL_ART_PROMPTS.md
 
 ---
 
