@@ -226,9 +226,7 @@ async function generateImage(
     // Extract image data from response
     for (const candidate of response.candidates || []) {
       for (const part of candidate.content?.parts || []) {
-        // @ts-expect-error - inlineData exists on image parts
-        if (part.inlineData) {
-          // @ts-expect-error - inlineData exists on image parts
+        if ("inlineData" in part && part.inlineData) {
           const imageData = part.inlineData.data;
           return Buffer.from(imageData, "base64");
         }

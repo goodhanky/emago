@@ -1,6 +1,6 @@
 # Emago MVP - Task Breakdown
 
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-08
 **Purpose:** Actionable task checklist organized by phase with acceptance criteria
 
 ---
@@ -58,11 +58,12 @@
   - Dependencies: None
   - Completed: 2026-01-05
 
-- [ ] **Generate pixel art assets**
+- [x] **Generate pixel art assets**
   - Acceptance: All 47 assets generated and saved to public/sprites/
   - Effort: L
   - Dependencies: AI prompts created
-  - Note: Using AI generation with prompts from PIXEL_ART_PROMPTS.md
+  - Completed: 2026-01-08
+  - Note: 42 core assets generated via GPT 5.2 (optional assets skipped)
 
 - [ ] **Set up sprite atlas pipeline**
   - Acceptance: Aseprite → TexturePacker → JSON atlas working, documented
@@ -152,60 +153,71 @@
 
 ### Week 3: Authentication + Basic UI
 
-- [ ] **Enable Supabase email/password auth**
+- [x] **Enable Supabase email/password auth**
   - Acceptance: Auth enabled in Supabase dashboard, email templates configured
   - Effort: S
   - Dependencies: Supabase project
+  - Completed: 2026-01-08
 
-- [ ] **Create Supabase browser client**
+- [x] **Create Supabase browser client**
   - Acceptance: src/lib/auth/supabase-client.ts working
   - Effort: S
   - Dependencies: Environment variables
+  - Completed: 2026-01-08
 
-- [ ] **Create Supabase server client**
+- [x] **Create Supabase server client**
   - Acceptance: src/lib/auth/supabase-server.ts working with cookies
   - Effort: M
   - Dependencies: Browser client
+  - Completed: 2026-01-08
 
-- [ ] **Implement auth middleware**
+- [x] **Implement auth middleware**
   - Acceptance: Protected routes redirect to login, session validated
   - Effort: M
   - Dependencies: Server client
+  - Completed: 2026-01-08
 
-- [ ] **Create login page**
+- [x] **Create login page**
   - Acceptance: /login page with email/password form, validation, error handling
   - Effort: M
   - Dependencies: Auth middleware
+  - Completed: 2026-01-08
 
-- [ ] **Create register page**
+- [x] **Create register page**
   - Acceptance: /register page with username field, validation
   - Effort: M
   - Dependencies: Login page
+  - Completed: 2026-01-08
 
-- [ ] **Create player registration API**
+- [x] **Create player registration API**
   - Acceptance: POST /api/auth/register creates Player + Planet with starting resources
   - Effort: L
   - Dependencies: Prisma client, auth
+  - Completed: 2026-01-08
 
-- [ ] **Create game layout**
+- [x] **Create game layout**
   - Acceptance: src/app/(game)/layout.tsx with navigation sidebar
   - Effort: M
   - Dependencies: Auth working
+  - Completed: 2026-01-08
 
-- [ ] **Create resource bar component**
+- [x] **Create resource bar component**
   - Acceptance: Displays Metal, Crystal, Deuterium, Energy with pixel icons
   - Effort: M
   - Dependencies: Game layout, sprite atlas
+  - Completed: 2026-01-08
 
-- [ ] **Create navigation component**
+- [x] **Create navigation component**
   - Acceptance: Links to Dashboard, Buildings, Research, Shipyard, Fleet
   - Effort: S
   - Dependencies: Game layout
+  - Completed: 2026-01-08
 
-- [ ] **Create dashboard page (static)**
+- [x] **Create dashboard page (static)**
   - Acceptance: Shows resources, queue status placeholders, navigation works
   - Effort: M
   - Dependencies: Layout, resource bar
+  - Completed: 2026-01-08
 
 ---
 

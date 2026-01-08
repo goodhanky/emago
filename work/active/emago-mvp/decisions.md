@@ -1,6 +1,6 @@
 # Emago MVP - Architecture Decisions
 
-**Last Updated:** 2026-01-06
+**Last Updated:** 2026-01-08
 **Purpose:** Record key technical and design decisions in ADR format
 
 ---

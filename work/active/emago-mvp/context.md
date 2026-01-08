@@ -1,6 +1,6 @@
 # Emago MVP - Context Snapshot
 
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-08
 **Purpose:** Resume in 2 minutes briefing for continuing work
 
 ---
@@ -42,17 +42,22 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Database schema created (11 tables)
 - [x] GameConfig seeded (75 values)
 - [x] Pixel art prompts created (47 assets documented)
-- [x] Sprite folder structure created
+- [x] Pixel art assets generated (42/42 core assets via GPT 5.2)
+- [x] Authentication system (Supabase email/password)
+- [x] Login/Register pages
+- [x] Player registration API (creates Player + Planet + Buildings + Researches)
+- [x] Game layout with navigation sidebar and resource bar
+- [x] Dashboard page with planet info
 
 ### In Progress
 
-- [ ] Art asset generation (using AI with prompts from PIXEL_ART_PROMPTS.md)
+- [ ] Formula engine implementation
 
 ### Next Up
 
-1. Generate pixel art assets (resource icons, UI components first)
-2. Authentication (Supabase email/password)
-3. Game layout + navigation
+1. Implement production/cost/time formulas
+2. Create lazy resource calculator
+3. Building system API + UI
 
 ### Blockers
 
@@ -69,23 +74,22 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 | UI updates           | Optimistic with rollback  | Instant feel                        |
 | Art approach         | Real pixel art from start | Consistency, avoid rework           |
 | Testing              | Vitest + Playwright       | Modern, fast, good Next.js support  |
-| Art spike            | Complete before coding    | Avoid UI rework                     |
 
 ---
 
 ## Key Files/Areas
 
-| Area        | Path                        | Why                                    |
-| ----------- | --------------------------- | -------------------------------------- |
-| PRD         | `/PRD-v2.0.md`              | Source of truth for formulas, features |
-| DB Schema   | `prisma/schema.prisma`      | Core data model (created)              |
-| DB Client   | `src/lib/db/index.ts`       | Prisma client singleton                |
-| Art Prompts | `PIXEL_ART_PROMPTS.md`      | AI prompts for all 47 game assets      |
-| Sprites     | `public/sprites/`           | Generated pixel art assets             |
-| Formulas    | `src/lib/game/formulas/`    | Game economy calculations              |
-| Lazy calc   | `src/lib/game/resources.ts` | Central resource calculation           |
-| Validation  | `src/lib/game/validation/`  | Server-side checks                     |
-| Cron jobs   | `src/app/api/cron/`         | Queue processing                       |
+| Area        | Path                             | Why                                    |
+| ----------- | -------------------------------- | -------------------------------------- |
+| PRD         | `/PRD-v2.0.md`                   | Source of truth for formulas, features |
+| DB Schema   | `prisma/schema.prisma`           | Core data model                        |
+| DB Client   | `src/lib/db/index.ts`            | Prisma client singleton                |
+| Auth        | `src/lib/auth/`                  | Supabase browser/server clients        |
+| Middleware  | `src/middleware.ts`              | Route protection                       |
+| Game Layout | `src/app/(game)/layout.tsx`      | Navigation + resource bar              |
+| Dashboard   | `src/app/(game)/dashboard/page.tsx` | Player dashboard                    |
+| Sprites     | `public/sprites/`                | 42 pixel art assets                    |
+| Formulas    | `src/lib/game/formulas/`         | Game economy calculations (TODO)       |
 
 ---
 
@@ -117,6 +121,6 @@ npm run format        # Run Prettier
 
 ## Next 3 Actions
 
-1. **Generate pixel art** - Use AI with prompts from PIXEL_ART_PROMPTS.md (resource icons + UI first)
-2. **Enable Supabase Auth** - Configure email/password authentication
-3. **Create auth pages** - Login/register pages with Supabase
+1. **Implement formula engine** - Production, cost, time, energy calculations from PRD
+2. **Create lazy resource calculator** - Calculate resources on-demand with time delta
+3. **Build buildings API** - GET/POST endpoints for upgrades with validation
