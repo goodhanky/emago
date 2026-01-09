@@ -13,7 +13,8 @@
       "Bash(npx prisma migrate dev:*)",
       "Bash(cat:*)",
       "Bash(npx prisma generate:*)",
-      "Bash(npm run db:seed:*)"
+      "Bash(npm run db:seed:*)",
+      "Bash(find:*)"
     ]
   }
 }

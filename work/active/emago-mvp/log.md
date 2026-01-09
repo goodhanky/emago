@@ -1,7 +1,48 @@
 # Emago MVP - Progress Log
 
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 **Purpose:** Chronological record of progress and decisions
+
+---
+
+## 2026-01-09 - Formula Engine Complete
+
+### What Changed
+
+- Created complete formula engine with 9 new files:
+  - `src/types/game.ts` - Type definitions (Resources, Costs, PlanetState, etc.)
+  - `src/lib/game/formulas/constants.ts` - All static game values, prerequisites
+  - `src/lib/game/formulas/energy.ts` - Energy consumption and factor calculations
+  - `src/lib/game/formulas/production.ts` - Metal, Crystal, Deuterium, Solar production
+  - `src/lib/game/formulas/storage.ts` - Storage capacity and clamping
+  - `src/lib/game/formulas/costs.ts` - Building, Research, Ship cost calculations
+  - `src/lib/game/formulas/time.ts` - Construction and research time formulas
+  - `src/lib/game/formulas/index.ts` - Barrel exports
+  - `src/lib/game/resources.ts` - Lazy resource calculator
+- All formulas match PRD Appendix A/B values
+- Build and lint pass
+
+### Key Decisions Made
+
+- Pure functions with no database access (easy to test)
+- Types imported from Prisma (BuildingType, TechType, ShipType)
+- Math.floor() for all calculations (matches OGame behavior)
+- Constants file includes all prerequisites for buildings, research, ships
+
+### What's Next
+
+1. Create building validation logic
+2. Build buildings API endpoints
+3. Create buildings page UI
+
+### Blockers
+
+- None
+
+### Notes
+
+- Formula engine ready for integration with building system
+- Week 4 tasks complete, moving to Week 5 (Building System)
 
 ---
 

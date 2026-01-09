@@ -1,6 +1,6 @@
 # Emago MVP - Task Breakdown
 
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 **Purpose:** Actionable task checklist organized by phase with acceptance criteria
 
 ---
@@ -225,35 +225,41 @@
 
 ### Week 4: Formula Engine
 
-- [ ] **Implement production formulas**
+- [x] **Implement production formulas**
   - Acceptance: calculateMetalProduction, Crystal, Deuterium, Solar match PRD
   - Effort: M
   - Dependencies: Phase 1 complete
+  - Completed: 2026-01-09
 
-- [ ] **Implement cost formulas**
+- [x] **Implement cost formulas**
   - Acceptance: Mine, facility, storage costs match PRD Appendix A
   - Effort: M
   - Dependencies: None
+  - Completed: 2026-01-09
 
-- [ ] **Implement time formulas**
+- [x] **Implement time formulas**
   - Acceptance: Building, research, ship time calculations correct
   - Effort: M
   - Dependencies: Cost formulas
+  - Completed: 2026-01-09
 
-- [ ] **Implement energy formulas**
+- [x] **Implement energy formulas**
   - Acceptance: Consumption + energy factor calculations correct
   - Effort: M
   - Dependencies: Production formulas
+  - Completed: 2026-01-09
 
-- [ ] **Implement storage formulas**
+- [x] **Implement storage formulas**
   - Acceptance: Capacity calculation matches PRD table
   - Effort: S
   - Dependencies: None
+  - Completed: 2026-01-09
 
-- [ ] **Create lazy resource calculator**
+- [x] **Create lazy resource calculator**
   - Acceptance: calculateCurrentResources returns correct values with time delta
   - Effort: L
   - Dependencies: All formula files
+  - Completed: 2026-01-09
 
 - [ ] **Unit test all formulas**
   - Acceptance: Tests compare against PRD Appendix A/B values, all pass
@@ -262,10 +268,12 @@
 
 ### Week 5: Building System
 
-- [ ] **Define building prerequisites**
+- [x] **Define building prerequisites**
   - Acceptance: BUILDING_PREREQUISITES constant with all requirements
   - Effort: S
   - Dependencies: None
+  - Completed: 2026-01-09
+  - Note: Included in src/lib/game/formulas/constants.ts
 
 - [ ] **Create building validation**
   - Acceptance: validateBuildingUpgrade checks queue, resources, prerequisites

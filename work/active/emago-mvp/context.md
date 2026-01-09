@@ -1,6 +1,6 @@
 # Emago MVP - Context Snapshot
 
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-09
 **Purpose:** Resume in 2 minutes briefing for continuing work
 
 ---
@@ -48,16 +48,18 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Player registration API (creates Player + Planet + Buildings + Researches)
 - [x] Game layout with navigation sidebar and resource bar
 - [x] Dashboard page with planet info
+- [x] Formula engine (9 files: production, costs, time, energy, storage, constants, types)
+- [x] Lazy resource calculator
 
 ### In Progress
 
-- [ ] Formula engine implementation
+- [ ] Building system API + UI
 
 ### Next Up
 
-1. Implement production/cost/time formulas
-2. Create lazy resource calculator
-3. Building system API + UI
+1. Building validation (prerequisites, resources, queue checks)
+2. Buildings API (GET/POST endpoints)
+3. Buildings page UI with upgrade functionality
 
 ### Blockers
 
@@ -79,17 +81,19 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 
 ## Key Files/Areas
 
-| Area        | Path                             | Why                                    |
-| ----------- | -------------------------------- | -------------------------------------- |
-| PRD         | `/PRD-v2.0.md`                   | Source of truth for formulas, features |
-| DB Schema   | `prisma/schema.prisma`           | Core data model                        |
-| DB Client   | `src/lib/db/index.ts`            | Prisma client singleton                |
-| Auth        | `src/lib/auth/`                  | Supabase browser/server clients        |
-| Middleware  | `src/middleware.ts`              | Route protection                       |
-| Game Layout | `src/app/(game)/layout.tsx`      | Navigation + resource bar              |
-| Dashboard   | `src/app/(game)/dashboard/page.tsx` | Player dashboard                    |
-| Sprites     | `public/sprites/`                | 42 pixel art assets                    |
-| Formulas    | `src/lib/game/formulas/`         | Game economy calculations (TODO)       |
+| Area        | Path                                | Why                                    |
+| ----------- | ----------------------------------- | -------------------------------------- |
+| PRD         | `/PRD-v2.0.md`                      | Source of truth for formulas, features |
+| DB Schema   | `prisma/schema.prisma`              | Core data model                        |
+| DB Client   | `src/lib/db/index.ts`               | Prisma client singleton                |
+| Auth        | `src/lib/auth/`                     | Supabase browser/server clients        |
+| Middleware  | `src/middleware.ts`                 | Route protection                       |
+| Game Layout | `src/app/(game)/layout.tsx`         | Navigation + resource bar              |
+| Dashboard   | `src/app/(game)/dashboard/page.tsx` | Player dashboard                       |
+| Sprites     | `public/sprites/`                   | 42 pixel art assets                    |
+| Formulas    | `src/lib/game/formulas/`            | Game economy calculations              |
+| Resources   | `src/lib/game/resources.ts`         | Lazy resource calculator               |
+| Types       | `src/types/game.ts`                 | Game-specific TypeScript types         |
 
 ---
 
@@ -121,6 +125,6 @@ npm run format        # Run Prettier
 
 ## Next 3 Actions
 
-1. **Implement formula engine** - Production, cost, time, energy calculations from PRD
-2. **Create lazy resource calculator** - Calculate resources on-demand with time delta
-3. **Build buildings API** - GET/POST endpoints for upgrades with validation
+1. **Create building validation** - Check prerequisites, resources, queue availability
+2. **Build buildings API** - GET/POST endpoints for upgrades with validation
+3. **Create buildings page UI** - Display all 11 buildings with upgrade functionality
