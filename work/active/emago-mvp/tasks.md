@@ -275,25 +275,29 @@
   - Completed: 2026-01-09
   - Note: Included in src/lib/game/formulas/constants.ts
 
-- [ ] **Create building validation**
+- [x] **Create building validation**
   - Acceptance: validateBuildingUpgrade checks queue, resources, prerequisites
   - Effort: M
   - Dependencies: Prerequisites, lazy calculator
+  - Completed: 2026-01-09
 
-- [ ] **Create GET /api/buildings endpoint**
+- [x] **Create GET /api/buildings endpoint**
   - Acceptance: Returns all buildings with levels for planet
   - Effort: S
   - Dependencies: Prisma client
+  - Completed: 2026-01-09
 
-- [ ] **Create POST /api/buildings/upgrade endpoint**
+- [x] **Create POST /api/buildings/upgrade endpoint**
   - Acceptance: Validates, deducts resources, creates queue entry atomically
   - Effort: L
   - Dependencies: Validation, lazy calculator
+  - Completed: 2026-01-09
 
-- [ ] **Create POST /api/buildings/cancel endpoint**
+- [x] **Create POST /api/buildings/cancel endpoint**
   - Acceptance: Cancels queue, refunds 100% resources
   - Effort: M
   - Dependencies: Upgrade endpoint
+  - Completed: 2026-01-09
 
 - [ ] **Implement rate limiting**
   - Acceptance: Max 10 actions/minute per user, returns 429 if exceeded
@@ -332,20 +336,24 @@
   - Effort: M
   - Dependencies: Building API, TanStack Query
 
-- [ ] **Create buildings page**
+- [x] **Create buildings page**
   - Acceptance: Lists all 11 buildings with current levels
   - Effort: M
   - Dependencies: Hooks, API
+  - Completed: 2026-01-09
 
-- [ ] **Create BuildingCard component**
+- [x] **Create BuildingCard component**
   - Acceptance: Shows name, level, cost, time, prerequisites, upgrade button
   - Effort: L
   - Dependencies: Buildings page
+  - Completed: 2026-01-09
 
-- [ ] **Create BuildingQueue component**
+- [x] **Create BuildingQueue component**
   - Acceptance: Shows active queue with countdown, cancel button
   - Effort: M
   - Dependencies: Buildings page
+  - Completed: 2026-01-09
+  - Note: Named ActiveQueuePanel in implementation
 
 - [ ] **Integration test building flow**
   - Acceptance: Full upgrade → completion → level increase tested

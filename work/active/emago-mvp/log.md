@@ -5,6 +5,52 @@
 
 ---
 
+## 2026-01-09 - Building System Complete
+
+### What Changed
+
+- Created building validation module (`src/lib/game/validation/buildings.ts`):
+  - `validateBuildingUpgrade()` - Checks queue, prerequisites, resources
+  - `canUpgradeBuilding()` - Simplified boolean check for UI
+  - Helper functions: `buildingArrayToMap()`, `researchArrayToMap()`, `planetToPlanetState()`
+- Created Buildings API endpoints:
+  - `GET /api/buildings` - Returns all 11 buildings with levels, costs, times, canUpgrade status
+  - `POST /api/buildings/upgrade` - Validates, deducts resources atomically, creates queue
+  - `POST /api/buildings/cancel` - Cancels queue, refunds 100% resources
+- Created Buildings page UI:
+  - Server component (`page.tsx`) with auth check
+  - Client component (`BuildingsList.tsx`) with interactive functionality
+  - `BuildingCard` - Displays building info, costs, upgrade button
+  - `ActiveQueuePanel` - Countdown timer, progress bar, cancel button
+- All API endpoints use Prisma transactions for atomic operations
+- Build and lint pass
+
+### Key Decisions Made
+
+- Queue status checked via `status === 'IN_PROGRESS'` (not just existence)
+- Resources calculated with lazy calculator at request time
+- Full 100% refund on cancel (per ADR-008)
+- Client fetches fresh data from API (not using server-passed initial data)
+
+### What's Next
+
+1. Create building completion cron job
+2. Research system implementation
+3. Shipyard system implementation
+
+### Blockers
+
+- None
+
+### Notes
+
+- Buildings can now be upgraded with proper validation
+- Queue shows countdown timer that updates every second
+- Cancel refunds resources (respects storage caps)
+- Week 5 building tasks complete, next is cron job for queue completion
+
+---
+
 ## 2026-01-09 - Formula Engine Complete
 
 ### What Changed

@@ -50,16 +50,19 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Dashboard page with planet info
 - [x] Formula engine (9 files: production, costs, time, energy, storage, constants, types)
 - [x] Lazy resource calculator
+- [x] Building validation logic (prerequisites, resources, queue checks)
+- [x] Buildings API (GET, POST upgrade, POST cancel)
+- [x] Buildings page UI with upgrade functionality
 
 ### In Progress
 
-- [ ] Building system API + UI
+- [ ] Building completion cron job
 
 ### Next Up
 
-1. Building validation (prerequisites, resources, queue checks)
-2. Buildings API (GET/POST endpoints)
-3. Buildings page UI with upgrade functionality
+1. Create building completion cron job (updates building level when queue completes)
+2. Research system (formulas, validation, API, UI)
+3. Shipyard system
 
 ### Blockers
 
@@ -81,19 +84,22 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 
 ## Key Files/Areas
 
-| Area        | Path                                | Why                                    |
-| ----------- | ----------------------------------- | -------------------------------------- |
-| PRD         | `/PRD-v2.0.md`                      | Source of truth for formulas, features |
-| DB Schema   | `prisma/schema.prisma`              | Core data model                        |
-| DB Client   | `src/lib/db/index.ts`               | Prisma client singleton                |
-| Auth        | `src/lib/auth/`                     | Supabase browser/server clients        |
-| Middleware  | `src/middleware.ts`                 | Route protection                       |
-| Game Layout | `src/app/(game)/layout.tsx`         | Navigation + resource bar              |
-| Dashboard   | `src/app/(game)/dashboard/page.tsx` | Player dashboard                       |
-| Sprites     | `public/sprites/`                   | 42 pixel art assets                    |
-| Formulas    | `src/lib/game/formulas/`            | Game economy calculations              |
-| Resources   | `src/lib/game/resources.ts`         | Lazy resource calculator               |
-| Types       | `src/types/game.ts`                 | Game-specific TypeScript types         |
+| Area           | Path                                    | Why                                    |
+| -------------- | --------------------------------------- | -------------------------------------- |
+| PRD            | `/PRD-v2.0.md`                          | Source of truth for formulas, features |
+| DB Schema      | `prisma/schema.prisma`                  | Core data model                        |
+| DB Client      | `src/lib/db/index.ts`                   | Prisma client singleton                |
+| Auth           | `src/lib/auth/`                         | Supabase browser/server clients        |
+| Middleware     | `src/middleware.ts`                     | Route protection                       |
+| Game Layout    | `src/app/(game)/layout.tsx`             | Navigation + resource bar              |
+| Dashboard      | `src/app/(game)/dashboard/page.tsx`     | Player dashboard                       |
+| Sprites        | `public/sprites/`                       | 42 pixel art assets                    |
+| Formulas       | `src/lib/game/formulas/`                | Game economy calculations              |
+| Resources      | `src/lib/game/resources.ts`             | Lazy resource calculator               |
+| Types          | `src/types/game.ts`                     | Game-specific TypeScript types         |
+| Validation     | `src/lib/game/validation/buildings.ts`  | Building upgrade validation            |
+| Buildings API  | `src/app/api/buildings/`                | GET, upgrade, cancel endpoints         |
+| Buildings Page | `src/app/(game)/buildings/`             | Buildings UI components                |
 
 ---
 
@@ -125,6 +131,6 @@ npm run format        # Run Prettier
 
 ## Next 3 Actions
 
-1. **Create building validation** - Check prerequisites, resources, queue availability
-2. **Build buildings API** - GET/POST endpoints for upgrades with validation
-3. **Create buildings page UI** - Display all 11 buildings with upgrade functionality
+1. **Create building completion cron** - Idempotent job to complete queued upgrades
+2. **Research formulas + validation** - Research costs, prerequisites, time calculations
+3. **Research API + UI** - GET/POST endpoints and research page
