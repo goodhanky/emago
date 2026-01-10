@@ -160,6 +160,9 @@ export const SHIP_STATS: Record<ShipType, ShipStats> = {
 // TIME CALCULATION CONSTANTS
 // ============================================
 
+// Game speed multiplier - set to 100 for testing, 1 for production
+export const GAME_SPEED = 100;
+
 export const TIME_CONSTANTS = {
   CONSTRUCTION_BASE: 2500,
   RESEARCH_BASE: 1000,

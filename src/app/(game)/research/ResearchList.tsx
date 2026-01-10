@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import type { BuildingType } from '@/lib/db';
+import type { TechType } from '@/lib/db';
 
 // ============================================
 // TYPES
@@ -15,32 +15,33 @@ interface Resources {
   deuterium: number;
 }
 
-interface BuildingPrerequisite {
-  building?: Partial<Record<string, number>>;
+interface ResearchPrerequisites {
   research?: Partial<Record<string, number>>;
 }
 
-interface Building {
-  type: BuildingType;
+interface Technology {
+  type: TechType;
   level: number;
   nextLevel: number;
   cost: Resources;
   timeSeconds: number;
-  prerequisites: BuildingPrerequisite;
-  canUpgrade: boolean;
-  upgradeBlockedReason: string | null;
+  labRequirement: number;
+  prerequisites: ResearchPrerequisites;
+  canResearch: boolean;
+  researchBlockedReason: string | null;
 }
 
 interface ActiveQueue {
   id: string;
-  buildingType: BuildingType;
+  techType: TechType;
   targetLevel: number;
   startTime: string;
   endTime: string;
   cost: Resources;
+  planetName: string;
 }
 
-interface BuildingsListProps {
+interface ResearchListProps {
   initialQueue: ActiveQueue | null;
 }
 
@@ -48,7 +49,7 @@ interface BuildingsListProps {
 // HELPER FUNCTIONS
 // ============================================
 
-function formatBuildingType(type: string): string {
+function formatTechType(type: string): string {
   return type
     .split('_')
     .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
@@ -77,46 +78,16 @@ function formatNumber(num: number): string {
 function getBlockedReasonText(reason: string | null): string {
   switch (reason) {
     case 'queue_active':
-      return 'Another building is under construction';
+      return 'Research already in progress';
+    case 'lab_level':
+      return 'Research Lab level too low';
     case 'prerequisites':
-      return 'Prerequisites not met';
+      return 'Research prerequisites not met';
     case 'resources':
       return 'Insufficient resources';
     default:
       return '';
   }
-}
-
-function calculateProgress(startTime: string, endTime: string): number {
-  const start = new Date(startTime).getTime();
-  const end = new Date(endTime).getTime();
-  const now = Date.now();
-  const total = end - start;
-  const elapsed = now - start;
-  return Math.min(100, Math.max(0, (elapsed / total) * 100));
-}
-
-// Building icon mapping (convert type to full path)
-function getBuildingIconPath(type: string): string {
-  // Resource buildings are in /buildings/resources/
-  const resourceBuildings: Record<string, string> = {
-    METAL_MINE: 'resources/metal-mine',
-    CRYSTAL_MINE: 'resources/crystal-mine',
-    DEUTERIUM_SYNTHESIZER: 'resources/deuterium-synthesizer',
-    SOLAR_PLANT: 'resources/solar-plant',
-    METAL_STORAGE: 'resources/metal-storage',
-    CRYSTAL_STORAGE: 'resources/crystal-storage',
-    DEUTERIUM_TANK: 'resources/deuterium-tank',
-  };
-  // Facility buildings are in /buildings/facilities/
-  const facilityBuildings: Record<string, string> = {
-    RESEARCH_LAB: 'facilities/research-lab',
-    SHIPYARD: 'facilities/shipyard',
-    ROBOT_FACTORY: 'facilities/robot-factory',
-    NANITE_FACTORY: 'facilities/nanite-factory',
-  };
-
-  return resourceBuildings[type] || facilityBuildings[type] || type.toLowerCase().replace(/_/g, '-');
 }
 
 // ============================================
@@ -144,29 +115,32 @@ function ResourceCost({
   );
 }
 
-function BuildingCard({
-  building,
+function ResearchCard({
+  tech,
   resources,
-  onUpgrade,
-  isUpgrading,
+  labLevel,
+  onResearch,
+  isResearching,
   hasActiveQueue,
 }: {
-  building: Building;
+  tech: Technology;
   resources: Resources;
-  onUpgrade: () => void;
-  isUpgrading: boolean;
+  labLevel: number;
+  onResearch: () => void;
+  isResearching: boolean;
   hasActiveQueue: boolean;
 }) {
-  const canUpgrade = building.canUpgrade && !hasActiveQueue && !isUpgrading;
+  const canResearch = tech.canResearch && !hasActiveQueue && !isResearching;
+  const labInsufficient = labLevel < tech.labRequirement;
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col">
       <div className="flex items-start gap-4">
-        {/* Building Icon */}
+        {/* Tech Icon - using placeholder */}
         <div className="w-16 h-16 flex-shrink-0 bg-slate-900 rounded-lg flex items-center justify-center overflow-hidden">
           <Image
-            src={`/sprites/buildings/${getBuildingIconPath(building.type)}.png`}
-            alt={formatBuildingType(building.type)}
+            src="/sprites/icons/nav-research.png"
+            alt={formatTechType(tech.type)}
             width={48}
             height={48}
             className="object-contain"
@@ -175,78 +149,75 @@ function BuildingCard({
         </div>
 
         <div className="flex-1 min-w-0">
-          {/* Building Name & Level */}
-          <h3 className="text-white font-semibold truncate">
-            {formatBuildingType(building.type)}
-          </h3>
-          <p className="text-slate-400 text-sm">Level {building.level}</p>
+          {/* Tech Name & Level */}
+          <h3 className="text-white font-semibold truncate">{formatTechType(tech.type)}</h3>
+          <p className="text-slate-400 text-sm">Level {tech.level}</p>
 
-          {/* Upgrade Costs */}
+          {/* Research Costs */}
           <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs">
-            <ResourceCost icon="metal" amount={building.cost.metal} available={resources.metal} />
-            <ResourceCost
-              icon="crystal"
-              amount={building.cost.crystal}
-              available={resources.crystal}
-            />
-            {building.cost.deuterium > 0 && (
+            {tech.cost.metal > 0 && (
+              <ResourceCost icon="metal" amount={tech.cost.metal} available={resources.metal} />
+            )}
+            {tech.cost.crystal > 0 && (
+              <ResourceCost
+                icon="crystal"
+                amount={tech.cost.crystal}
+                available={resources.crystal}
+              />
+            )}
+            {tech.cost.deuterium > 0 && (
               <ResourceCost
                 icon="deuterium"
-                amount={building.cost.deuterium}
+                amount={tech.cost.deuterium}
                 available={resources.deuterium}
               />
             )}
           </div>
 
-          {/* Construction Time */}
+          {/* Research Time */}
           <p className="text-slate-500 text-xs mt-2">
-            Build time: {formatDuration(building.timeSeconds)}
+            Research time: {formatDuration(tech.timeSeconds)}
           </p>
         </div>
       </div>
 
-      {/* Prerequisites (if any) */}
-      {(building.prerequisites.building || building.prerequisites.research) && (
-        <div className="mt-3 pt-3 border-t border-slate-700">
-          <p className="text-xs text-slate-500 mb-1">Requirements:</p>
-          <div className="flex flex-wrap gap-2 text-xs">
-            {building.prerequisites.building &&
-              Object.entries(building.prerequisites.building).map(([req, level]) => (
-                <span key={req} className="text-slate-400">
-                  {formatBuildingType(req)} {level}
-                </span>
-              ))}
-            {building.prerequisites.research &&
-              Object.entries(building.prerequisites.research).map(([req, level]) => (
-                <span key={req} className="text-slate-400">
-                  {formatBuildingType(req)} {level}
-                </span>
-              ))}
-          </div>
+      {/* Requirements */}
+      <div className="mt-3 pt-3 border-t border-slate-700">
+        <p className="text-xs text-slate-500 mb-1">Requirements:</p>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span className={labInsufficient ? 'text-red-400' : 'text-slate-400'}>
+            Research Lab {tech.labRequirement}
+          </span>
+          {tech.prerequisites.research &&
+            Object.entries(tech.prerequisites.research).map(([req, level]) => (
+              <span key={req} className="text-slate-400">
+                {formatTechType(req)} {level}
+              </span>
+            ))}
         </div>
-      )}
+      </div>
 
-      {/* Upgrade Button */}
+      {/* Research Button */}
       <button
-        onClick={onUpgrade}
-        disabled={!canUpgrade}
+        onClick={onResearch}
+        disabled={!canResearch}
         className={`
           w-full mt-4 px-4 py-2 rounded-lg text-sm font-medium
           transition-colors
           ${
-            canUpgrade
-              ? 'bg-blue-600 hover:bg-blue-500 text-white'
+            canResearch
+              ? 'bg-purple-600 hover:bg-purple-500 text-white'
               : 'bg-slate-700 text-slate-500 cursor-not-allowed'
           }
         `}
       >
-        {isUpgrading ? 'Starting...' : `Upgrade to Level ${building.nextLevel}`}
+        {isResearching ? 'Starting...' : `Research Level ${tech.nextLevel}`}
       </button>
 
       {/* Blocked Reason */}
-      {!building.canUpgrade && building.upgradeBlockedReason && (
+      {!tech.canResearch && tech.researchBlockedReason && (
         <p className="text-red-400 text-xs mt-2 text-center">
-          {getBlockedReasonText(building.upgradeBlockedReason)}
+          {getBlockedReasonText(tech.researchBlockedReason)}
         </p>
       )}
     </div>
@@ -284,28 +255,24 @@ function ActiveQueuePanel({
 
       if (remaining <= 0 && !isCompleting) {
         setIsCompleting(true);
-        // Poll for completion every 2 seconds until building is done
-        const pollCompletion = () => {
-          onComplete();
-        };
-        pollCompletion();
+        // Poll for completion
+        onComplete();
       }
     };
 
     updateTimer();
-    // Update more frequently for smoother progress bar
     const interval = setInterval(updateTimer, 100);
 
     return () => clearInterval(interval);
   }, [queue.startTime, queue.endTime, onComplete, isCompleting]);
 
   return (
-    <div className="bg-slate-800 border border-yellow-600/50 rounded-lg p-4">
+    <div className="bg-slate-800 border border-purple-600/50 rounded-lg p-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 flex-shrink-0 bg-slate-900 rounded-lg flex items-center justify-center">
             <Image
-              src={`/sprites/buildings/${getBuildingIconPath(queue.buildingType)}.png`}
+              src="/sprites/icons/nav-research.png"
               alt=""
               width={32}
               height={32}
@@ -314,9 +281,9 @@ function ActiveQueuePanel({
           </div>
           <div>
             <h3 className="text-white font-semibold">
-              Building: {formatBuildingType(queue.buildingType)} Level {queue.targetLevel}
+              Researching: {formatTechType(queue.techType)} Level {queue.targetLevel}
             </h3>
-            <p className="text-yellow-400 text-sm">
+            <p className="text-purple-400 text-sm">
               {isCompleting ? (
                 <span className="animate-pulse">Completing...</span>
               ) : (
@@ -337,10 +304,10 @@ function ActiveQueuePanel({
         </button>
       </div>
 
-      {/* Progress Bar - smooth continuous animation */}
+      {/* Progress Bar */}
       <div className="mt-3 h-2 bg-slate-700 rounded-full overflow-hidden">
         <div
-          className="h-full bg-yellow-500"
+          className="h-full bg-purple-500"
           style={{
             width: `${progress}%`,
             transition: 'width 0.1s linear',
@@ -355,26 +322,28 @@ function ActiveQueuePanel({
 // MAIN COMPONENT
 // ============================================
 
-export function BuildingsList({ initialQueue }: BuildingsListProps) {
+export function ResearchList({ initialQueue }: ResearchListProps) {
   const router = useRouter();
-  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [technologies, setTechnologies] = useState<Technology[]>([]);
   const [activeQueue, setActiveQueue] = useState<ActiveQueue | null>(initialQueue);
   const [resources, setResources] = useState<Resources>({ metal: 0, crystal: 0, deuterium: 0 });
+  const [labLevel, setLabLevel] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [upgrading, setUpgrading] = useState<string | null>(null);
+  const [researching, setResearching] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
 
-  // Fetch buildings data
-  const fetchBuildings = useCallback(async () => {
+  // Fetch research data
+  const fetchResearch = useCallback(async () => {
     try {
-      const res = await fetch('/api/buildings');
+      const res = await fetch('/api/research');
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setBuildings(data.buildings);
+      setTechnologies(data.technologies);
       setActiveQueue(data.activeQueue);
       setResources(data.resources);
+      setLabLevel(data.labLevel);
     } catch (error) {
-      console.error('Failed to fetch buildings:', error);
+      console.error('Failed to fetch research:', error);
     } finally {
       setIsLoading(false);
     }
@@ -382,33 +351,33 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
 
   // Initial fetch
   useEffect(() => {
-    fetchBuildings();
-  }, [fetchBuildings]);
+    fetchResearch();
+  }, [fetchResearch]);
 
-  // Handle upgrade
-  const handleUpgrade = async (buildingType: BuildingType) => {
-    setUpgrading(buildingType);
+  // Handle research start
+  const handleResearch = async (techType: TechType) => {
+    setResearching(techType);
     try {
-      const res = await fetch('/api/buildings/upgrade', {
+      const res = await fetch('/api/research/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ buildingType }),
+        body: JSON.stringify({ techType }),
       });
 
       if (!res.ok) {
         const error = await res.json();
-        alert(error.error || 'Failed to start upgrade');
+        alert(error.error || 'Failed to start research');
         return;
       }
 
       // Refresh data and server components (resource bar)
-      await fetchBuildings();
+      await fetchResearch();
       router.refresh();
     } catch (error) {
-      console.error('Upgrade failed:', error);
-      alert('Failed to start upgrade');
+      console.error('Research failed:', error);
+      alert('Failed to start research');
     } finally {
-      setUpgrading(null);
+      setResearching(null);
     }
   };
 
@@ -416,7 +385,7 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
   const handleCancel = async () => {
     setCancelling(true);
     try {
-      const res = await fetch('/api/buildings/cancel', {
+      const res = await fetch('/api/research/cancel', {
         method: 'POST',
       });
 
@@ -427,17 +396,17 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
       }
 
       // Refresh data and server components (resource bar)
-      await fetchBuildings();
+      await fetchResearch();
       router.refresh();
     } catch (error) {
       console.error('Cancel failed:', error);
-      alert('Failed to cancel construction');
+      alert('Failed to cancel research');
     } finally {
       setCancelling(false);
     }
   };
 
-  // Handle queue completion - poll until cron processes the building
+  // Handle queue completion - poll until cron processes the research
   const handleQueueComplete = useCallback(() => {
     let attempts = 0;
     const maxAttempts = 30; // Poll for up to 60 seconds
@@ -445,7 +414,7 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
     const pollForCompletion = async () => {
       attempts++;
       try {
-        const res = await fetch('/api/buildings');
+        const res = await fetch('/api/research');
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
 
@@ -453,9 +422,9 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
         if (data.activeQueue) {
           // Still processing, try triggering cron manually in dev
           if (attempts === 1) {
-            // Trigger cron to process the completed building
+            // Trigger cron to process the completed research
             const cronSecret = process.env.NEXT_PUBLIC_CRON_SECRET;
-            fetch('/api/cron/buildings', {
+            fetch('/api/cron/research', {
               headers: cronSecret ? { Authorization: `Bearer ${cronSecret}` } : {},
             }).catch(() => {});
           }
@@ -464,15 +433,17 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
             setTimeout(pollForCompletion, 2000);
           } else {
             // Give up polling, just update with current data
-            setBuildings(data.buildings);
+            setTechnologies(data.technologies);
             setActiveQueue(data.activeQueue);
             setResources(data.resources);
+            setLabLevel(data.labLevel);
           }
         } else {
           // Queue cleared, update UI
-          setBuildings(data.buildings);
+          setTechnologies(data.technologies);
           setActiveQueue(data.activeQueue);
           setResources(data.resources);
+          setLabLevel(data.labLevel);
         }
       } catch (error) {
         console.error('Poll failed:', error);
@@ -489,7 +460,7 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[...Array(11)].map((_, i) => (
+        {[...Array(9)].map((_, i) => (
           <div
             key={i}
             className="bg-slate-800 border border-slate-700 rounded-lg p-4 h-48 animate-pulse"
@@ -519,15 +490,16 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
         />
       )}
 
-      {/* Buildings Grid */}
+      {/* Technologies Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {buildings.map((building) => (
-          <BuildingCard
-            key={building.type}
-            building={building}
+        {technologies.map((tech) => (
+          <ResearchCard
+            key={tech.type}
+            tech={tech}
             resources={resources}
-            onUpgrade={() => handleUpgrade(building.type)}
-            isUpgrading={upgrading === building.type}
+            labLevel={labLevel}
+            onResearch={() => handleResearch(tech.type)}
+            isResearching={researching === tech.type}
             hasActiveQueue={!!activeQueue}
           />
         ))}

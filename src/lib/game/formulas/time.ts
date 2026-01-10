@@ -1,6 +1,6 @@
 import { BuildingType, TechType, ShipType } from '@/lib/db';
 import type { ConstructionTimeInput, ResearchTimeInput, ShipBuildTimeInput } from '@/types/game';
-import { TIME_CONSTANTS } from './constants';
+import { TIME_CONSTANTS, GAME_SPEED } from './constants';
 import { calculateBuildingCost, calculateResearchCost, calculateShipCost } from './costs';
 
 /**
@@ -16,7 +16,7 @@ export function calculateConstructionTime(input: ConstructionTimeInput): number 
     (1 + robotFactoryLevel) *
     Math.pow(2, naniteFactoryLevel);
 
-  const seconds = (totalCost / divisor) * TIME_CONSTANTS.SECONDS_PER_HOUR;
+  const seconds = (totalCost / divisor) * TIME_CONSTANTS.SECONDS_PER_HOUR / GAME_SPEED;
 
   return Math.max(TIME_CONSTANTS.MINIMUM_SECONDS, Math.floor(seconds));
 }
@@ -50,7 +50,7 @@ export function calculateResearchTime(input: ResearchTimeInput): number {
   const totalCost = metalCost + crystalCost + deuteriumCost;
   const divisor = TIME_CONSTANTS.RESEARCH_BASE * (1 + labLevel);
 
-  const seconds = (totalCost / divisor) * TIME_CONSTANTS.SECONDS_PER_HOUR;
+  const seconds = (totalCost / divisor) * TIME_CONSTANTS.SECONDS_PER_HOUR / GAME_SPEED;
 
   return Math.max(TIME_CONSTANTS.MINIMUM_SECONDS, Math.floor(seconds));
 }
@@ -86,7 +86,7 @@ export function calculateShipBuildTime(input: ShipBuildTimeInput): number {
     (1 + shipyardLevel) *
     Math.pow(2, naniteFactoryLevel);
 
-  const seconds = (totalCost / divisor) * TIME_CONSTANTS.SECONDS_PER_HOUR;
+  const seconds = (totalCost / divisor) * TIME_CONSTANTS.SECONDS_PER_HOUR / GAME_SPEED;
 
   return Math.max(TIME_CONSTANTS.MINIMUM_SECONDS, Math.floor(seconds));
 }

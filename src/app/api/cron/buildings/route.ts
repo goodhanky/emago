@@ -24,8 +24,9 @@ const CRON_SECRET = process.env.CRON_SECRET;
 export async function GET(request: NextRequest) {
   try {
     // Verify authorization (Vercel Cron sends this header)
+    // Skip auth in development for easier testing
     const authHeader = request.headers.get('authorization');
-    if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+    if (process.env.NODE_ENV === 'production' && CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
