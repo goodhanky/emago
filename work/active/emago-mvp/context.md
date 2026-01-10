@@ -1,6 +1,6 @@
 # Emago MVP - Context Snapshot
 
-**Last Updated:** 2026-01-09
+**Last Updated:** 2026-01-09 (session 2)
 **Purpose:** Resume in 2 minutes briefing for continuing work
 
 ---
@@ -55,6 +55,8 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Buildings page UI with upgrade functionality
 - [x] Building completion cron job (idempotent, recalculates production)
 - [x] Vercel cron configuration (every minute)
+- [x] Building system bug fixes (routes, sprites, progress bar, queue deletion)
+- [x] Manual smoke test passed
 
 ### In Progress
 
@@ -81,6 +83,7 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 | UI updates           | Optimistic with rollback  | Instant feel                        |
 | Art approach         | Real pixel art from start | Consistency, avoid rework           |
 | Testing              | Vitest + Playwright       | Modern, fast, good Next.js support  |
+| Queue cleanup        | Delete on complete/cancel | Unique constraint on planetId       |
 
 ---
 

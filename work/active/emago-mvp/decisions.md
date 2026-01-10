@@ -1,6 +1,6 @@
 # Emago MVP - Architecture Decisions
 
-**Last Updated:** 2026-01-09
+**Last Updated:** 2026-01-09 (session 2)
 **Purpose:** Record key technical and design decisions in ADR format
 
 ---
@@ -272,3 +272,33 @@ Use Prisma 7 with @prisma/adapter-pg for database connections instead of Prisma 
 - Must configure pg Pool in client instantiation
 - Requires @prisma/adapter-pg and pg dependencies
 - Connection string passed to Pool, not PrismaClient directly
+
+---
+
+## ADR-010: Delete Queue Records on Completion/Cancel
+
+**Date:** 2026-01-09
+**Status:** Accepted
+
+### Decision
+
+Delete queue records (BuildingQueue, ResearchQueue) after completion or cancellation instead of marking them with status COMPLETED/CANCELLED.
+
+### Alternatives Considered
+
+1. **Mark as COMPLETED/CANCELLED** - Keep records for history
+2. **Delete records** - Remove after processing
+3. **Move to archive table** - Keep history separately
+
+### Rationale
+
+- Schema has `@unique` constraint on `planetId` for BuildingQueue
+- Only one queue record can exist per planet at a time
+- Marking as COMPLETED leaves record in place, blocking new builds
+- Deleting allows immediate start of new queue
+
+### Consequences
+
+- No built-in history of completed builds (can add to ActionLog if needed)
+- Simpler queue management (existence = active)
+- Must ensure deletion happens in same transaction as completion

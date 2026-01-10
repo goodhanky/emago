@@ -1,6 +1,6 @@
 # Emago MVP - Task Breakdown
 
-**Last Updated:** 2026-01-09
+**Last Updated:** 2026-01-09 (session 2)
 **Purpose:** Actionable task checklist organized by phase with acceptance criteria
 
 ---
@@ -357,10 +357,12 @@
   - Completed: 2026-01-09
   - Note: Named ActiveQueuePanel in implementation
 
-- [ ] **Integration test building flow**
+- [x] **Integration test building flow**
   - Acceptance: Full upgrade → completion → level increase tested
   - Effort: M
   - Dependencies: All building features
+  - Completed: 2026-01-09
+  - Note: Manual smoke test passed (upgrade, completion, cancel flows verified)
 
 ---
 
@@ -368,15 +370,19 @@
 
 ### Week 7: Research Formulas
 
-- [ ] **Implement research cost formulas**
+- [x] **Implement research cost formulas**
   - Acceptance: All 9 tech costs match PRD
   - Effort: M
   - Dependencies: Phase 2 complete
+  - Completed: 2026-01-09
+  - Note: Already in src/lib/game/formulas/costs.ts (calculateResearchCost)
 
-- [ ] **Define research prerequisites**
+- [x] **Define research prerequisites**
   - Acceptance: Lab level + tech requirements for all 9 techs
   - Effort: S
   - Dependencies: None
+  - Completed: 2026-01-09
+  - Note: Already in src/lib/game/formulas/constants.ts (RESEARCH_PREREQUISITES)
 
 - [ ] **Create research validation**
   - Acceptance: validateResearch checks queue, lab level, techs, resources

@@ -5,6 +5,43 @@
 
 ---
 
+## 2026-01-09 - Building System Bug Fixes & Manual Test
+
+### What Changed
+
+- Fixed middleware routes (use `/dashboard` not `/game/dashboard`)
+- Fixed navigation links in game layout
+- Fixed building sprite paths (use correct subfolders: `resources/`, `facilities/`)
+- Fixed progress bar to update smoothly (100ms intervals instead of 1s)
+- Fixed queue completion to delete record instead of marking COMPLETED (unique constraint)
+- Fixed cancel to delete queue instead of marking CANCELLED
+- Added `unoptimized` flag to images for large sprite files
+- Added `router.refresh()` to update header resources after upgrade/cancel
+- Removed cancel confirmation dialog per user request
+- Added auto-trigger of cron when building timer completes
+
+### Key Decisions Made
+
+- ADR-010: Delete queue records on completion/cancel (unique constraint on planetId prevents multiple records)
+
+### What's Next
+
+1. Implement Research system (validation, API, UI)
+2. Research cron job
+3. Shipyard system
+
+### Blockers
+
+- None
+
+### Notes
+
+- Building system manually tested end-to-end: upgrade → completion → level increase
+- Cancel flow tested: cancel → refund → can start new build
+- Phase 2 (Building System) fully complete and verified
+
+---
+
 ## 2026-01-09 - Building Cron Job Complete
 
 ### What Changed
