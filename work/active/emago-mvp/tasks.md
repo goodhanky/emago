@@ -311,15 +311,17 @@
 
 ### Week 6: Queues + UI
 
-- [ ] **Create building completion cron job**
+- [x] **Create building completion cron job**
   - Acceptance: Idempotent, updates building level, recalculates production
   - Effort: L
   - Dependencies: Building API
+  - Completed: 2026-01-09
 
-- [ ] **Configure Vercel cron**
+- [x] **Configure Vercel cron**
   - Acceptance: vercel.json with cron schedule every minute
   - Effort: S
   - Dependencies: Cron job
+  - Completed: 2026-01-09
 
 - [ ] **Create useResourceTicker hook**
   - Acceptance: Client-side ticking every 1 second, smooth display

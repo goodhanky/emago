@@ -53,15 +53,17 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Building validation logic (prerequisites, resources, queue checks)
 - [x] Buildings API (GET, POST upgrade, POST cancel)
 - [x] Buildings page UI with upgrade functionality
+- [x] Building completion cron job (idempotent, recalculates production)
+- [x] Vercel cron configuration (every minute)
 
 ### In Progress
 
-- [ ] Building completion cron job
+- [ ] Research system (formulas already done, need validation + API + UI)
 
 ### Next Up
 
-1. Create building completion cron job (updates building level when queue completes)
-2. Research system (formulas, validation, API, UI)
+1. Research validation + API (GET, POST start, POST cancel)
+2. Research page UI
 3. Shipyard system
 
 ### Blockers
@@ -100,6 +102,7 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 | Validation     | `src/lib/game/validation/buildings.ts`  | Building upgrade validation            |
 | Buildings API  | `src/app/api/buildings/`                | GET, upgrade, cancel endpoints         |
 | Buildings Page | `src/app/(game)/buildings/`             | Buildings UI components                |
+| Cron Jobs      | `src/app/api/cron/`                     | Building completion cron               |
 
 ---
 
@@ -131,6 +134,6 @@ npm run format        # Run Prettier
 
 ## Next 3 Actions
 
-1. **Create building completion cron** - Idempotent job to complete queued upgrades
-2. **Research formulas + validation** - Research costs, prerequisites, time calculations
-3. **Research API + UI** - GET/POST endpoints and research page
+1. **Research validation** - Check lab level, prerequisites, resources, queue
+2. **Research API** - GET/POST start/POST cancel endpoints
+3. **Research page UI** - Display all 9 techs with upgrade functionality

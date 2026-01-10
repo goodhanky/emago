@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-01-09 - Building Cron Job Complete
+
+### What Changed
+
+- Created building completion cron job (`src/app/api/cron/buildings/route.ts`)
+- Idempotent: double-checks status inside transaction
+- Updates building level, recalculates production rates and energy balance
+- Increments fieldsUsed on planet
+- Created `vercel.json` with cron schedule (every minute)
+
+### What's Next
+
+1. Research system validation + API
+2. Research page UI
+3. Shipyard system
+
+### Blockers
+
+- None
+
+---
+
 ## 2026-01-09 - Building System Complete
 
 ### What Changed
