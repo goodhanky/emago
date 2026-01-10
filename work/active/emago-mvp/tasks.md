@@ -1,6 +1,6 @@
 # Emago MVP - Task Breakdown
 
-**Last Updated:** 2026-01-09 (session 2)
+**Last Updated:** 2026-01-10 (session 3)
 **Purpose:** Actionable task checklist organized by phase with acceptance criteria
 
 ---
@@ -384,10 +384,11 @@
   - Completed: 2026-01-09
   - Note: Already in src/lib/game/formulas/constants.ts (RESEARCH_PREREQUISITES)
 
-- [ ] **Create research validation**
+- [x] **Create research validation**
   - Acceptance: validateResearch checks queue, lab level, techs, resources
   - Effort: M
   - Dependencies: Prerequisites
+  - Completed: 2026-01-10
 
 - [ ] **Unit test research formulas**
   - Acceptance: All costs verified against PRD
@@ -396,52 +397,64 @@
 
 ### Week 8: Research API
 
-- [ ] **Create GET /api/research endpoint**
+- [x] **Create GET /api/research endpoint**
   - Acceptance: Returns all tech levels for player
   - Effort: S
   - Dependencies: Prisma client
+  - Completed: 2026-01-10
 
-- [ ] **Create POST /api/research/start endpoint**
+- [x] **Create POST /api/research/start endpoint**
   - Acceptance: Validates, deducts resources, creates queue
   - Effort: L
   - Dependencies: Validation
+  - Completed: 2026-01-10
 
-- [ ] **Create POST /api/research/cancel endpoint**
+- [x] **Create POST /api/research/cancel endpoint**
   - Acceptance: Cancels queue, refunds resources
   - Effort: M
   - Dependencies: Start endpoint
+  - Completed: 2026-01-10
 
-- [ ] **Create research completion cron job**
+- [x] **Create research completion cron job**
   - Acceptance: Idempotent, updates tech level
   - Effort: M
   - Dependencies: Research API
+  - Completed: 2026-01-10
 
-- [ ] **Integration test research flow**
+- [x] **Integration test research flow**
   - Acceptance: Full start → completion → level increase tested
   - Effort: M
   - Dependencies: All research API
+  - Completed: 2026-01-10
+  - Note: Manual smoke test passed
 
 ### Week 9: Research UI
 
-- [ ] **Create useResearchMutation hook**
+- [x] **Create useResearchMutation hook**
   - Acceptance: Optimistic update with rollback
   - Effort: M
   - Dependencies: Research API
+  - Completed: 2026-01-10
+  - Note: Implemented inline in ResearchList.tsx
 
-- [ ] **Create research page**
+- [x] **Create research page**
   - Acceptance: Lists all 9 technologies with levels
   - Effort: M
   - Dependencies: Hooks
+  - Completed: 2026-01-10
 
-- [ ] **Create ResearchCard component**
+- [x] **Create ResearchCard component**
   - Acceptance: Shows name, level, cost, time, lab requirement, prerequisites
   - Effort: L
   - Dependencies: Research page
+  - Completed: 2026-01-10
 
-- [ ] **Create ResearchQueue component**
+- [x] **Create ResearchQueue component**
   - Acceptance: Shows active research with countdown
   - Effort: M
   - Dependencies: Research page
+  - Completed: 2026-01-10
+  - Note: Named ActiveQueuePanel in ResearchList.tsx
 
 ---
 

@@ -1,6 +1,6 @@
 # Emago MVP - Architecture Decisions
 
-**Last Updated:** 2026-01-09 (session 2)
+**Last Updated:** 2026-01-10 (session 3)
 **Purpose:** Record key technical and design decisions in ADR format
 
 ---
@@ -302,3 +302,33 @@ Delete queue records (BuildingQueue, ResearchQueue) after completion or cancella
 - No built-in history of completed builds (can add to ActionLog if needed)
 - Simpler queue management (existence = active)
 - Must ensure deletion happens in same transaction as completion
+
+---
+
+## ADR-011: Game Speed Multiplier for Testing
+
+**Date:** 2026-01-10
+**Status:** Accepted
+
+### Decision
+
+Add a `GAME_SPEED` constant (default 100 for dev, 1 for production) that divides all build/research times.
+
+### Alternatives Considered
+
+1. **Manually edit time constants** - Change base values temporarily
+2. **Environment variable** - Configure per deployment
+3. **Code constant** - Simple multiplier in formulas
+
+### Rationale
+
+- Testing requires fast iteration; waiting minutes for builds is impractical
+- Single constant is easy to find and change
+- Applied consistently to buildings, research, and ships
+- Easy to reset to 1 for production
+
+### Consequences
+
+- Must remember to set `GAME_SPEED = 1` before production deploy
+- All time displays show reduced times (accurate to actual build time)
+- Cron jobs process completions faster in dev

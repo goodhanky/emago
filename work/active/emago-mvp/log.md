@@ -1,7 +1,47 @@
 # Emago MVP - Progress Log
 
-**Last Updated:** 2026-01-09
+**Last Updated:** 2026-01-10
 **Purpose:** Chronological record of progress and decisions
+
+---
+
+## 2026-01-10 - Research System Complete
+
+### What Changed
+
+- Created research validation module (`src/lib/game/validation/research.ts`)
+- Created Research API endpoints:
+  - `GET /api/research` - Returns all 9 technologies with levels, costs, times
+  - `POST /api/research/start` - Validates, deducts resources, creates queue
+  - `POST /api/research/cancel` - Cancels queue, refunds 100% resources
+- Created research completion cron job (`src/app/api/cron/research/route.ts`)
+- Created Research page UI with ResearchList, ResearchCard, ActiveQueuePanel
+- Added `GAME_SPEED = 100` constant for 100x faster testing
+- Fixed cron auth to skip in development mode
+- Fixed polling bug in BuildingsList and ResearchList (removed incorrect status check)
+- Added admin give-resources endpoint for testing
+- Updated vercel.json with research cron schedule
+
+### Key Decisions Made
+
+- ADR-011: GAME_SPEED multiplier for testing (set to 100 for dev, 1 for prod)
+- Research uses placeholder icons (nav-research.png) until proper sprites generated
+
+### What's Next
+
+1. Shipyard system (validation, API, UI)
+2. Ship completion cron job
+3. Fleet page
+
+### Blockers
+
+- None
+
+### Notes
+
+- Research system manually tested end-to-end: start → completion → level increase
+- Phase 3 (Research System) fully complete and verified
+- Moving to Phase 4 (Shipyard System)
 
 ---
 

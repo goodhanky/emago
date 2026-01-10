@@ -1,6 +1,6 @@
 # Emago MVP - Context Snapshot
 
-**Last Updated:** 2026-01-09 (session 2)
+**Last Updated:** 2026-01-10 (session 3)
 **Purpose:** Resume in 2 minutes briefing for continuing work
 
 ---
@@ -56,17 +56,23 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] Building completion cron job (idempotent, recalculates production)
 - [x] Vercel cron configuration (every minute)
 - [x] Building system bug fixes (routes, sprites, progress bar, queue deletion)
-- [x] Manual smoke test passed
+- [x] Research validation logic (lab level, prerequisites, resources, queue)
+- [x] Research API (GET, POST start, POST cancel)
+- [x] Research page UI with all 9 technologies
+- [x] Research completion cron job
+- [x] 100x game speed for testing (GAME_SPEED constant)
+- [x] Dev cron auth bypass for easier testing
+- [x] Manual smoke test passed (buildings + research)
 
 ### In Progress
 
-- [ ] Research system (formulas already done, need validation + API + UI)
+- [ ] Shipyard system
 
 ### Next Up
 
-1. Research validation + API (GET, POST start, POST cancel)
-2. Research page UI
-3. Shipyard system
+1. Ship validation + API (GET, POST build, POST cancel)
+2. Shipyard page UI
+3. Ship completion cron job
 
 ### Blockers
 
@@ -84,28 +90,32 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 | Art approach         | Real pixel art from start | Consistency, avoid rework           |
 | Testing              | Vitest + Playwright       | Modern, fast, good Next.js support  |
 | Queue cleanup        | Delete on complete/cancel | Unique constraint on planetId       |
+| Game speed           | GAME_SPEED=100 for dev    | Fast iteration during testing       |
 
 ---
 
 ## Key Files/Areas
 
-| Area           | Path                                    | Why                                    |
-| -------------- | --------------------------------------- | -------------------------------------- |
-| PRD            | `/PRD-v2.0.md`                          | Source of truth for formulas, features |
-| DB Schema      | `prisma/schema.prisma`                  | Core data model                        |
-| DB Client      | `src/lib/db/index.ts`                   | Prisma client singleton                |
-| Auth           | `src/lib/auth/`                         | Supabase browser/server clients        |
-| Middleware     | `src/middleware.ts`                     | Route protection                       |
-| Game Layout    | `src/app/(game)/layout.tsx`             | Navigation + resource bar              |
-| Dashboard      | `src/app/(game)/dashboard/page.tsx`     | Player dashboard                       |
-| Sprites        | `public/sprites/`                       | 42 pixel art assets                    |
-| Formulas       | `src/lib/game/formulas/`                | Game economy calculations              |
-| Resources      | `src/lib/game/resources.ts`             | Lazy resource calculator               |
-| Types          | `src/types/game.ts`                     | Game-specific TypeScript types         |
-| Validation     | `src/lib/game/validation/buildings.ts`  | Building upgrade validation            |
-| Buildings API  | `src/app/api/buildings/`                | GET, upgrade, cancel endpoints         |
-| Buildings Page | `src/app/(game)/buildings/`             | Buildings UI components                |
-| Cron Jobs      | `src/app/api/cron/`                     | Building completion cron               |
+| Area            | Path                                    | Why                                    |
+| --------------- | --------------------------------------- | -------------------------------------- |
+| PRD             | `/PRD-v2.0.md`                          | Source of truth for formulas, features |
+| DB Schema       | `prisma/schema.prisma`                  | Core data model                        |
+| DB Client       | `src/lib/db/index.ts`                   | Prisma client singleton                |
+| Auth            | `src/lib/auth/`                         | Supabase browser/server clients        |
+| Middleware      | `src/middleware.ts`                     | Route protection                       |
+| Game Layout     | `src/app/(game)/layout.tsx`             | Navigation + resource bar              |
+| Dashboard       | `src/app/(game)/dashboard/page.tsx`     | Player dashboard                       |
+| Sprites         | `public/sprites/`                       | 42 pixel art assets                    |
+| Formulas        | `src/lib/game/formulas/`                | Game economy calculations              |
+| Resources       | `src/lib/game/resources.ts`             | Lazy resource calculator               |
+| Types           | `src/types/game.ts`                     | Game-specific TypeScript types         |
+| Bldg Validation | `src/lib/game/validation/buildings.ts`  | Building upgrade validation            |
+| Research Valid. | `src/lib/game/validation/research.ts`   | Research start validation              |
+| Buildings API   | `src/app/api/buildings/`                | GET, upgrade, cancel endpoints         |
+| Research API    | `src/app/api/research/`                 | GET, start, cancel endpoints           |
+| Buildings Page  | `src/app/(game)/buildings/`             | Buildings UI components                |
+| Research Page   | `src/app/(game)/research/`              | Research UI components                 |
+| Cron Jobs       | `src/app/api/cron/`                     | Building + research completion crons   |
 
 ---
 
@@ -137,6 +147,6 @@ npm run format        # Run Prettier
 
 ## Next 3 Actions
 
-1. **Research validation** - Check lab level, prerequisites, resources, queue
-2. **Research API** - GET/POST start/POST cancel endpoints
-3. **Research page UI** - Display all 9 techs with upgrade functionality
+1. **Ship validation** - Check shipyard level, tech prerequisites, resources, queue
+2. **Shipyard API** - GET/POST build/POST cancel endpoints
+3. **Shipyard page UI** - Display all 5 ships with build functionality
