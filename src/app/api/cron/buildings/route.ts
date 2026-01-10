@@ -123,10 +123,9 @@ export async function GET(request: NextRequest) {
           },
         });
 
-        // Mark queue as completed
-        await tx.buildingQueue.update({
+        // Delete queue after completion (unique constraint allows only one per planet)
+        await tx.buildingQueue.delete({
           where: { id: queue.id },
-          data: { status: 'COMPLETED' },
         });
 
         results.push({

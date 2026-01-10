@@ -58,10 +58,9 @@ export async function POST() {
 
     // 5. Execute transaction: cancel queue + refund resources
     await prisma.$transaction(async (tx) => {
-      // Mark queue as cancelled
-      await tx.buildingQueue.update({
+      // Delete queue (unique constraint allows only one per planet)
+      await tx.buildingQueue.delete({
         where: { id: queue.id },
-        data: { status: 'CANCELLED' },
       });
 
       // Refund resources (respects storage caps)

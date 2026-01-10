@@ -15,7 +15,11 @@
       "Bash(npx prisma generate:*)",
       "Bash(npm run db:seed:*)",
       "Bash(find:*)",
-      "Skill(sync-work)"
+      "Skill(sync-work)",
+      "Bash(ls:*)",
+      "Bash(npm run dev)",
+      "Bash(curl:*)",
+      "Bash(node -e:*)"
     ]
   }
 }

@@ -37,7 +37,8 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Protected routes - require authentication
-  if (pathname.startsWith("/game")) {
+  const protectedRoutes = ["/dashboard", "/buildings", "/research", "/shipyard", "/fleet"];
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
@@ -45,11 +46,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Auth routes - redirect to game if already authenticated
+  // Auth routes - redirect to dashboard if already authenticated
   if (pathname === "/login" || pathname === "/register") {
     if (user) {
       const url = request.nextUrl.clone();
-      url.pathname = "/game/dashboard";
+      url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
   }
@@ -57,7 +58,7 @@ export async function middleware(request: NextRequest) {
   // Redirect root to appropriate location
   if (pathname === "/") {
     const url = request.nextUrl.clone();
-    url.pathname = user ? "/game/dashboard" : "/login";
+    url.pathname = user ? "/dashboard" : "/login";
     return NextResponse.redirect(url);
   }
 

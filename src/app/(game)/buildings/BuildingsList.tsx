@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { BuildingType } from '@/lib/db';
 
@@ -95,22 +96,27 @@ function calculateProgress(startTime: string, endTime: string): number {
   return Math.min(100, Math.max(0, (elapsed / total) * 100));
 }
 
-// Building icon mapping (convert type to filename)
-function getBuildingIcon(type: string): string {
-  const iconMap: Record<string, string> = {
-    METAL_MINE: 'metal-mine',
-    CRYSTAL_MINE: 'crystal-mine',
-    DEUTERIUM_SYNTHESIZER: 'deuterium-synthesizer',
-    SOLAR_PLANT: 'solar-plant',
-    METAL_STORAGE: 'metal-storage',
-    CRYSTAL_STORAGE: 'crystal-storage',
-    DEUTERIUM_TANK: 'deuterium-tank',
-    RESEARCH_LAB: 'research-lab',
-    SHIPYARD: 'shipyard',
-    ROBOT_FACTORY: 'robot-factory',
-    NANITE_FACTORY: 'nanite-factory',
+// Building icon mapping (convert type to full path)
+function getBuildingIconPath(type: string): string {
+  // Resource buildings are in /buildings/resources/
+  const resourceBuildings: Record<string, string> = {
+    METAL_MINE: 'resources/metal-mine',
+    CRYSTAL_MINE: 'resources/crystal-mine',
+    DEUTERIUM_SYNTHESIZER: 'resources/deuterium-synthesizer',
+    SOLAR_PLANT: 'resources/solar-plant',
+    METAL_STORAGE: 'resources/metal-storage',
+    CRYSTAL_STORAGE: 'resources/crystal-storage',
+    DEUTERIUM_TANK: 'resources/deuterium-tank',
   };
-  return iconMap[type] || type.toLowerCase().replace(/_/g, '-');
+  // Facility buildings are in /buildings/facilities/
+  const facilityBuildings: Record<string, string> = {
+    RESEARCH_LAB: 'facilities/research-lab',
+    SHIPYARD: 'facilities/shipyard',
+    ROBOT_FACTORY: 'facilities/robot-factory',
+    NANITE_FACTORY: 'facilities/nanite-factory',
+  };
+
+  return resourceBuildings[type] || facilityBuildings[type] || type.toLowerCase().replace(/_/g, '-');
 }
 
 // ============================================
@@ -130,7 +136,7 @@ function ResourceCost({
 
   return (
     <div className="flex items-center gap-1">
-      <Image src={`/sprites/resources/${icon}.png`} alt={icon} width={14} height={14} />
+      <Image src={`/sprites/resources/${icon}.png`} alt={icon} width={14} height={14} unoptimized />
       <span className={isInsufficient ? 'text-red-400' : 'text-slate-300'}>
         {formatNumber(amount)}
       </span>
@@ -159,11 +165,12 @@ function BuildingCard({
         {/* Building Icon */}
         <div className="w-16 h-16 flex-shrink-0 bg-slate-900 rounded-lg flex items-center justify-center overflow-hidden">
           <Image
-            src={`/sprites/buildings/${getBuildingIcon(building.type)}.png`}
+            src={`/sprites/buildings/${getBuildingIconPath(building.type)}.png`}
             alt={formatBuildingType(building.type)}
             width={48}
             height={48}
             className="object-contain"
+            unoptimized
           />
         </div>
 
@@ -258,25 +265,39 @@ function ActiveQueuePanel({
   onComplete: () => void;
 }) {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   useEffect(() => {
+    const startTime = new Date(queue.startTime).getTime();
     const endTime = new Date(queue.endTime).getTime();
+    const totalDuration = endTime - startTime;
 
     const updateTimer = () => {
       const now = Date.now();
       const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
-      setTimeRemaining(remaining);
+      const elapsed = now - startTime;
+      const currentProgress = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
 
-      if (remaining <= 0) {
-        onComplete();
+      setTimeRemaining(remaining);
+      setProgress(currentProgress);
+
+      if (remaining <= 0 && !isCompleting) {
+        setIsCompleting(true);
+        // Poll for completion every 2 seconds until building is done
+        const pollCompletion = () => {
+          onComplete();
+        };
+        pollCompletion();
       }
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 1000);
+    // Update more frequently for smoother progress bar
+    const interval = setInterval(updateTimer, 100);
 
     return () => clearInterval(interval);
-  }, [queue.endTime, onComplete]);
+  }, [queue.startTime, queue.endTime, onComplete, isCompleting]);
 
   return (
     <div className="bg-slate-800 border border-yellow-600/50 rounded-lg p-4">
@@ -284,10 +305,11 @@ function ActiveQueuePanel({
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 flex-shrink-0 bg-slate-900 rounded-lg flex items-center justify-center">
             <Image
-              src={`/sprites/buildings/${getBuildingIcon(queue.buildingType)}.png`}
+              src={`/sprites/buildings/${getBuildingIconPath(queue.buildingType)}.png`}
               alt=""
               width={32}
               height={32}
+              unoptimized
             />
           </div>
           <div>
@@ -295,14 +317,18 @@ function ActiveQueuePanel({
               Building: {formatBuildingType(queue.buildingType)} Level {queue.targetLevel}
             </h3>
             <p className="text-yellow-400 text-sm">
-              Time remaining: {formatDuration(timeRemaining)}
+              {isCompleting ? (
+                <span className="animate-pulse">Completing...</span>
+              ) : (
+                `Time remaining: ${formatDuration(timeRemaining)}`
+              )}
             </p>
           </div>
         </div>
 
         <button
           onClick={onCancel}
-          disabled={cancelling}
+          disabled={cancelling || isCompleting}
           className="px-4 py-2 bg-red-600/20 border border-red-600 text-red-400
                      hover:bg-red-600/30 rounded-lg text-sm transition-colors
                      disabled:opacity-50 disabled:cursor-not-allowed"
@@ -311,12 +337,13 @@ function ActiveQueuePanel({
         </button>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar - smooth continuous animation */}
       <div className="mt-3 h-2 bg-slate-700 rounded-full overflow-hidden">
         <div
-          className="h-full bg-yellow-500 transition-all duration-1000"
+          className="h-full bg-yellow-500"
           style={{
-            width: `${calculateProgress(queue.startTime, queue.endTime)}%`,
+            width: `${progress}%`,
+            transition: 'width 0.1s linear',
           }}
         />
       </div>
@@ -329,6 +356,7 @@ function ActiveQueuePanel({
 // ============================================
 
 export function BuildingsList({ initialQueue }: BuildingsListProps) {
+  const router = useRouter();
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [activeQueue, setActiveQueue] = useState<ActiveQueue | null>(initialQueue);
   const [resources, setResources] = useState<Resources>({ metal: 0, crystal: 0, deuterium: 0 });
@@ -373,8 +401,9 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
         return;
       }
 
-      // Refresh data
+      // Refresh data and server components (resource bar)
       await fetchBuildings();
+      router.refresh();
     } catch (error) {
       console.error('Upgrade failed:', error);
       alert('Failed to start upgrade');
@@ -385,10 +414,6 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
 
   // Handle cancel
   const handleCancel = async () => {
-    if (!confirm('Cancel this construction? You will receive a full refund.')) {
-      return;
-    }
-
     setCancelling(true);
     try {
       const res = await fetch('/api/buildings/cancel', {
@@ -401,8 +426,9 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
         return;
       }
 
-      // Refresh data
+      // Refresh data and server components (resource bar)
       await fetchBuildings();
+      router.refresh();
     } catch (error) {
       console.error('Cancel failed:', error);
       alert('Failed to cancel construction');
@@ -411,13 +437,54 @@ export function BuildingsList({ initialQueue }: BuildingsListProps) {
     }
   };
 
-  // Handle queue completion
+  // Handle queue completion - poll until cron processes the building
   const handleQueueComplete = useCallback(() => {
-    // Delay fetch slightly to allow server to process
-    setTimeout(() => {
-      fetchBuildings();
-    }, 1000);
-  }, [fetchBuildings]);
+    let attempts = 0;
+    const maxAttempts = 30; // Poll for up to 60 seconds
+
+    const pollForCompletion = async () => {
+      attempts++;
+      try {
+        const res = await fetch('/api/buildings');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+
+        // Check if queue is still active
+        if (data.activeQueue && data.activeQueue.status === 'IN_PROGRESS') {
+          // Still processing, try triggering cron manually in dev
+          if (attempts === 1) {
+            // Trigger cron to process the completed building
+            const cronSecret = process.env.NEXT_PUBLIC_CRON_SECRET;
+            fetch('/api/cron/buildings', {
+              headers: cronSecret ? { Authorization: `Bearer ${cronSecret}` } : {},
+            }).catch(() => {});
+          }
+
+          if (attempts < maxAttempts) {
+            setTimeout(pollForCompletion, 2000);
+          } else {
+            // Give up polling, just update with current data
+            setBuildings(data.buildings);
+            setActiveQueue(data.activeQueue);
+            setResources(data.resources);
+          }
+        } else {
+          // Queue cleared, update UI
+          setBuildings(data.buildings);
+          setActiveQueue(data.activeQueue);
+          setResources(data.resources);
+        }
+      } catch (error) {
+        console.error('Poll failed:', error);
+        if (attempts < maxAttempts) {
+          setTimeout(pollForCompletion, 2000);
+        }
+      }
+    };
+
+    // Start polling after a short delay
+    setTimeout(pollForCompletion, 1000);
+  }, []);
 
   if (isLoading) {
     return (

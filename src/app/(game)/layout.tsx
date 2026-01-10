@@ -36,11 +36,11 @@ export default async function GameLayout({
   }
 
   const navItems = [
-    { href: "/game/dashboard", label: "Dashboard", icon: "nav-dashboard" },
-    { href: "/game/buildings", label: "Buildings", icon: "nav-buildings" },
-    { href: "/game/research", label: "Research", icon: "nav-research" },
-    { href: "/game/shipyard", label: "Shipyard", icon: "nav-shipyard" },
-    { href: "/game/fleet", label: "Fleet", icon: "nav-fleet" },
+    { href: "/dashboard", label: "Dashboard", icon: "nav-dashboard" },
+    { href: "/buildings", label: "Buildings", icon: "nav-buildings" },
+    { href: "/research", label: "Research", icon: "nav-research" },
+    { href: "/shipyard", label: "Shipyard", icon: "nav-shipyard" },
+    { href: "/fleet", label: "Fleet", icon: "nav-fleet" },
   ];
 
   return (
@@ -68,6 +68,7 @@ export default async function GameLayout({
                     width={24}
                     height={24}
                     className="opacity-80"
+                    unoptimized
                   />
                   {item.label}
                 </Link>
@@ -145,6 +146,7 @@ function ResourceDisplay({
         alt={label}
         width={24}
         height={24}
+        unoptimized
       />
       <div>
         <p className={`text-sm font-medium ${valueColor}`}>
