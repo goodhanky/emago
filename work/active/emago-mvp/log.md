@@ -1,7 +1,55 @@
 # Emago MVP - Progress Log
 
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-01-12
 **Purpose:** Chronological record of progress and decisions
+
+---
+
+## 2026-01-12 - Shipyard System Complete
+
+### What Changed
+
+- Created ship validation module (`src/lib/game/validation/ships.ts`)
+  - `validateShipBuild()` - Checks quantity, queue, shipyard level, tech prereqs, resources
+  - `canBuildShip()` - Simplified boolean check for UI
+  - `shipArrayToMap()` - Helper to convert DB array to counts map
+- Created Ships API endpoints:
+  - `GET /api/ships` - Returns all 5 ships with counts, costs, times, prereqs
+  - `POST /api/ships/build` - Validates, deducts batch cost, creates queue
+  - `POST /api/ships/cancel` - Cancels queue, refunds only unbuilt ships
+- Created ship completion cron job (`src/app/api/cron/ships/route.ts`)
+  - Processes ships one at a time via `currentShipEndTime`
+  - Upserts to PlanetShip (increments count)
+  - Updates `completedCount` and `currentShipEndTime` for next ship
+  - Deletes queue when batch complete
+- Created Shipyard page UI:
+  - Server component (`page.tsx`) with auth check
+  - Client component (`ShipyardList.tsx`) with quantity input
+  - `ShipCard` - Shows costs, prereqs, quantity input, build button
+  - `ActiveQueuePanel` - "Building 1/5" progress, dual countdown
+- Updated `vercel.json` with ships cron schedule
+- Committed and pushed to main
+
+### Key Decisions Made
+
+- Ship cancel uses partial refund: only unbuilt ships refunded
+- Ships don't have unique constraint on planetId (validated in code)
+
+### What's Next
+
+1. Fleet page UI (display ships on planet)
+2. Polish & Testing phase (Vitest, Playwright)
+3. Manual playtest
+
+### Blockers
+
+- None
+
+### Notes
+
+- Phase 4 (Shipyard System) mostly complete (fleet page remaining)
+- API layer smoke test passed (auth returns 401, cron returns 200)
+- Full E2E test requires browser login
 
 ---
 

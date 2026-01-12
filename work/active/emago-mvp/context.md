@@ -1,6 +1,6 @@
 # Emago MVP - Context Snapshot
 
-**Last Updated:** 2026-01-10 (session 3)
+**Last Updated:** 2026-01-12 (session 4)
 **Purpose:** Resume in 2 minutes briefing for continuing work
 
 ---
@@ -63,16 +63,21 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 - [x] 100x game speed for testing (GAME_SPEED constant)
 - [x] Dev cron auth bypass for easier testing
 - [x] Manual smoke test passed (buildings + research)
+- [x] Ship validation module (prereqs, resources, queue checks)
+- [x] Ships API (GET, POST build, POST cancel)
+- [x] Ship completion cron job (individual ship processing)
+- [x] Shipyard page UI with quantity input and batch progress
+- [x] Manual smoke test passed (API layer verified)
 
 ### In Progress
 
-- [ ] Shipyard system
+- [ ] Fleet page (display ships on planet)
 
 ### Next Up
 
-1. Ship validation + API (GET, POST build, POST cancel)
-2. Shipyard page UI
-3. Ship completion cron job
+1. Fleet page UI - Display all ships on planet with counts
+2. Polish & Testing phase (Vitest, Playwright)
+3. Manual playtest (30+ minute session)
 
 ### Blockers
 
@@ -115,7 +120,10 @@ Building a web-based space strategy game (Ogame-inspired) with pixel art UI, laz
 | Research API    | `src/app/api/research/`                 | GET, start, cancel endpoints           |
 | Buildings Page  | `src/app/(game)/buildings/`             | Buildings UI components                |
 | Research Page   | `src/app/(game)/research/`              | Research UI components                 |
-| Cron Jobs       | `src/app/api/cron/`                     | Building + research completion crons   |
+| Ship Validation | `src/lib/game/validation/ships.ts`      | Ship build validation                  |
+| Ships API       | `src/app/api/ships/`                    | GET, build, cancel endpoints           |
+| Shipyard Page   | `src/app/(game)/shipyard/`              | Shipyard UI components                 |
+| Cron Jobs       | `src/app/api/cron/`                     | Building, research, ship crons         |
 
 ---
 
@@ -147,6 +155,6 @@ npm run format        # Run Prettier
 
 ## Next 3 Actions
 
-1. **Ship validation** - Check shipyard level, tech prerequisites, resources, queue
-2. **Shipyard API** - GET/POST build/POST cancel endpoints
-3. **Shipyard page UI** - Display all 5 ships with build functionality
+1. **Fleet page** - Display all ships on planet with counts and stats
+2. **Configure Vitest** - Set up unit testing framework
+3. **Write formula unit tests** - Test production, cost, time formulas

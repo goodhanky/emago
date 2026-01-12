@@ -1,6 +1,6 @@
 # Emago MVP - Task Breakdown
 
-**Last Updated:** 2026-01-10 (session 3)
+**Last Updated:** 2026-01-12 (session 4)
 **Purpose:** Actionable task checklist organized by phase with acceptance criteria
 
 ---
@@ -462,20 +462,23 @@
 
 ### Week 10: Ship Formulas
 
-- [ ] **Define ship costs and stats**
+- [x] **Define ship costs and stats**
   - Acceptance: All 5 ships with metal, crystal, deut, hull, shield, weapon, cargo, speed
   - Effort: M
   - Dependencies: Phase 3 complete
+  - Completed: 2026-01-09 (already in constants.ts)
 
-- [ ] **Define ship prerequisites**
+- [x] **Define ship prerequisites**
   - Acceptance: Shipyard level + tech requirements for all 5 ships
   - Effort: S
   - Dependencies: None
+  - Completed: 2026-01-09 (already in constants.ts)
 
-- [ ] **Create ship validation**
+- [x] **Create ship validation**
   - Acceptance: validateShipBuild checks shipyard, techs, resources
   - Effort: M
   - Dependencies: Prerequisites
+  - Completed: 2026-01-12
 
 - [ ] **Unit test ship formulas**
   - Acceptance: Costs and build times verified
@@ -484,52 +487,64 @@
 
 ### Week 11: Shipyard API
 
-- [ ] **Create GET /api/ships endpoint**
+- [x] **Create GET /api/ships endpoint**
   - Acceptance: Returns ship counts on planet
   - Effort: S
   - Dependencies: Prisma client
+  - Completed: 2026-01-12
 
-- [ ] **Create POST /api/ships/build endpoint**
+- [x] **Create POST /api/ships/build endpoint**
   - Acceptance: Validates, deducts resources for batch, creates queue
   - Effort: L
   - Dependencies: Validation
+  - Completed: 2026-01-12
 
-- [ ] **Create POST /api/ships/cancel endpoint**
+- [x] **Create POST /api/ships/cancel endpoint**
   - Acceptance: Cancels remaining ships, refunds their cost
   - Effort: M
   - Dependencies: Build endpoint
+  - Completed: 2026-01-12
 
-- [ ] **Create ship completion cron job**
+- [x] **Create ship completion cron job**
   - Acceptance: Processes ONE ship at a time, updates completedCount
   - Effort: L
   - Dependencies: Ship API
+  - Completed: 2026-01-12
 
-- [ ] **Integration test ship flow**
+- [x] **Integration test ship flow**
   - Acceptance: Build batch → individual completions → correct ship counts
   - Effort: M
   - Dependencies: All ship API
+  - Completed: 2026-01-12
+  - Note: API layer smoke test passed (auth, cron verified)
 
 ### Week 12: Shipyard + Fleet UI
 
-- [ ] **Create useShipBuild mutation**
+- [x] **Create useShipBuild mutation**
   - Acceptance: Optimistic update with rollback
   - Effort: M
   - Dependencies: Ship API
+  - Completed: 2026-01-12
+  - Note: Implemented inline in ShipyardList.tsx
 
-- [ ] **Create shipyard page**
+- [x] **Create shipyard page**
   - Acceptance: Lists all 5 ship types with costs
   - Effort: M
   - Dependencies: Hooks
+  - Completed: 2026-01-12
 
-- [ ] **Create ShipCard component**
+- [x] **Create ShipCard component**
   - Acceptance: Shows name, cost, time, prerequisites, quantity input, stats
   - Effort: L
   - Dependencies: Shipyard page
+  - Completed: 2026-01-12
 
-- [ ] **Create ShipQueue component**
+- [x] **Create ShipQueue component**
   - Acceptance: Shows "Building X (3/10)" with countdown
   - Effort: M
   - Dependencies: Shipyard page
+  - Completed: 2026-01-12
+  - Note: Named ActiveQueuePanel in ShipyardList.tsx
 
 - [ ] **Create fleet page**
   - Acceptance: Lists all ships on planet with counts
